@@ -32,14 +32,14 @@ help:
 ci:
 	pip install poetry
 	poetry install
-	poetry run flake8 humps
-	poetry run pylint humps
+	poetry run flake8 remagic
+	poetry run pylint remagic
 	# poetry run pytest --cov-report term-missing # --cov=humps
 	poetry run coverage run -m pytest
 
 lint:
-	poetry run flake8 humps
-	poetry run pylint humps
+	poetry run flake8 remagic
+	poetry run pylint remagic
 
 clean: clean-build clean-pyc
 
