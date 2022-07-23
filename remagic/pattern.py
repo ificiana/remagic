@@ -104,6 +104,18 @@ class Pattern:
 
     @property
     def maybe(self):
+        """
+        Makes pattern optional, alias for negation operator
+        Usage:
+        >>> import remagic
+        >>> pattern = remagic.create("test")
+        >>> print(pattern.maybe)
+        <remagic.Pattern object; pattern=r"(test)?">
+        >>> pattern = remagic.create("abc")
+        >>> print(-pattern)
+        <remagic.Pattern object; pattern=r"(abc)?">
+        :return: optional Pattern object
+        """
         if self._maybe:
             return exactly(regex.compile(r"\((.+)\)\+").sub(r"\g<1>",
                                                             self.regex))
@@ -112,6 +124,18 @@ class Pattern:
 
     @property
     def one_or_more(self):
+        """
+        Makes pattern repeat once or more, alias for positive operator
+        Usage:
+        >>> import remagic
+        >>> pattern = remagic.create("test")
+        >>> print(pattern.one_or_more)
+        <remagic.Pattern object; pattern=r"(test)+">
+        >>> pattern = remagic.create("abc")
+        >>> print(+pattern)
+        <remagic.Pattern object; pattern=r"(abc)+">
+        :return: quantified Pattern oject
+        """
         if self._one_or_more:
             return exactly(regex.compile(r"\((.+)\)\?").sub(r"\g<1>",
                                                             self.regex))
@@ -119,12 +143,26 @@ class Pattern:
         return +self
 
     def add(self, other):
+        """
+        Function to add two Patterns
+        :param other: Pattern
+        :return: other Pattern appended to this Pattern
+        """
         return self + other
 
     def multipy(self, num: int):
+        """
+        Function to specify quantifiers
+        :param num: integer, times to repeat
+        :return: quantified Pattern
+        """
         return self * num
 
     def compile(self, *args, **kwargs):
+        """
+        Wrapper around regex.compile method
+        :return:
+        """
         return regex.compile(self.regex, *args, **kwargs)
 
     def __add__(self, other):
@@ -168,6 +206,9 @@ class Pattern:
 
 
 class PatternIterable(Pattern):
+    """
+    Class wrapper on Pattern for types taking two arguments
+    """
     def __init__(self, type_, iterable):
         super().__init__(type_, iterable)
 
