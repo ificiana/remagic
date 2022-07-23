@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "remagic"
-version = "0.0.5"
+version = "0.0.6"
 description = "Work with RegEx with relative ease"
 authors = ["ificiana <ificiana@gmail.com>"]
 license = "MIT License"
