@@ -100,7 +100,7 @@ class Pattern:
             <remagic.Pattern object; pattern=r"\\D">
         :return: negated Pattern object
         """
-        return self.__invert__()
+        return ~self
 
     @property
     def maybe(self):
