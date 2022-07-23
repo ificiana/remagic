@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/ificiana/remagic/badge.svg?branch=main)](https://coveralls.io/github/ificiana/remagic?branch=main)
+
 # remagic
 Working with regex made easier! 
 Partly inspired from `magic-regexp` for Node
