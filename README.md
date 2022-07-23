@@ -16,6 +16,10 @@ R = pattern4.compile()
 # use the regex later
 ``` 
 
+## Installation 
+install from pypi
+`pip install remagic`
+
 ## Work in Progress!
 
 ### Known bugs
