@@ -7,7 +7,7 @@ license = "MIT License"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-regex = "2021.11.10"
+regex = "^2021.11.10"
 
 [tool.poetry.dev-dependencies]
 bumpversion = "^0.6.0"
