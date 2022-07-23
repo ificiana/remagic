@@ -17,13 +17,13 @@ R = pattern4.compile()
 ``` 
 
 ## Installation 
-install from pypi
+Install from PyPI:
 `pip install remagic`
 
 ## Work in Progress!
 
+### Documentation
+TODO: [docs](https://ificiana.github.io/remagic)
+
 ### Known bugs
-
 - improper behaviour with `any_of`
-
-### TODO: Documentation
