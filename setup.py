@@ -11,7 +11,7 @@ with codecs.open(os.path.join(here, "README.md"), encoding="utf-8") as fh:
 
 setuptools.setup(
     name="remagic",
-    version="0.0.5",
+    version="0.0.0",
     author="Ificiana",
     author_email="ificiana@gmail.com",
     packages=["remagic"],
