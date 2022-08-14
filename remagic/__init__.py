@@ -1,3 +1,13 @@
+"""
+Implements RegEx abstraction logic, for easy working with RegEx in Python.
+"""
+__title__ = "remagic"
+__version__ = "0.0.8"
+__author__ = "ificiana"
+__license__ = "MIT License"
+__copyright__ = "Copyright 2022 ificiana"
+
+
 from .constants import Consts
 from .interface import *
 
