@@ -2,7 +2,7 @@
 import codecs
 import os
 
-import setuptools
+import setuptools  # type: ignore
 
 here = os.path.abspath(os.path.dirname(__file__))
 
@@ -15,14 +15,13 @@ setuptools.setup(
     author="Ificiana",
     author_email="ificiana@gmail.com",
     packages=["remagic"],
-    package_data={"": ["LICENSE"], "remagic": ["py.typed", "main.pyi"]},
+    package_data={"": ["LICENSE"], "remagic": ["py.typed", "constants.pyi"]},
     url="https://github.com/ificiana/remagic",
     license="MIT License",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
