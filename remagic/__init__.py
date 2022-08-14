@@ -1,36 +1,31 @@
-"""
-Implements RegEx abstraction logic, for easy working with RegEx in Python.
-"""
-__title__ = "remagic"
-__version__ = "0.0.8"
-__author__ = "ificiana"
-__license__ = "MIT License"
-__copyright__ = "Copyright 2022 ificiana"
+from .constants import Consts
+from .interface import *
 
-
-from .pattern import Pattern, types
-from .pattern import _supported_types
-from .main import create
-
-supported_types = _supported_types
-CHAR = types["CHAR"]
-DIGIT = types["DIGIT"]
-LETTER = types["LETTER"]
-TAB = types["TAB"]
-WS = types["WS"]
-WHITESPACE = types["WHITESPACE"]
-N = types["N"]
-LINEFEED = types["LINEFEED"]
-R = types["R"]
-CARRIAGE_RETURN = types["CARRIAGE_RETURN"]
-char_in = types["char_in"]
-char_not_in = types["char_not_in"]
-any_of = types["any_of"]
-exactly = types["exactly"]
+CHAR = create(Consts.CHAR)
+WHITESPACE = create(Consts.WHITESPACE)
+WS = create(Consts.WS)
+WORD = create(Consts.WORD)
+DIGIT = create(Consts.DIGIT)
+LETTER = create(Consts.LETTER)
+TAB = create(Consts.TAB)
+LINEFEED = create(Consts.LINEFEED)
+CARRIAGE_RETURN = create(Consts.CARRIAGE_RETURN)
+N = create(Consts.N)
+R = create(Consts.R)
 
 __all__ = [
     "create",
-    "Pattern",
-    "supported_types",
-    *types.keys(),
+    "exactly",
+    "Consts",
+    "CHAR",
+    "WORD",
+    "WS",
+    "WHITESPACE",
+    "LETTER",
+    "LINEFEED",
+    "CARRIAGE_RETURN",
+    "DIGIT",
+    "TAB",
+    "R",
+    "N",
 ]
