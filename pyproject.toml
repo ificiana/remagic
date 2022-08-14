@@ -6,19 +6,20 @@ authors = ["ificiana <ificiana@gmail.com>"]
 license = "MIT License"
 
 [tool.poetry.dependencies]
-python = "^3.7"
-regex = "^2021.11.10"
+python = "^3.7.2"
+regex = "^2022.7.25"
 
 [tool.poetry.dev-dependencies]
+black = "^22.6.0"
 bumpversion = "^0.6.0"
-pytest = "^6.2.5"
-pylint = "^2.12.2"
-flake8 = "^4.0.1"
+pytest = "^7.1.2"
+pylint = "^2.14.5"
+flake8 = "^5.0.4"
 pytest-cov = "^3.0.0"
-pathlib2 = "^2.3.6"
+pathlib2 = "^2.3.7"
 scandir = "^1.10.0"
 coveralls = "^3.3.1"
-twine = "^3.7.2"
+twine = "^4.0.1"
 Sphinx = "^4.3.2"
 
 [build-system]
