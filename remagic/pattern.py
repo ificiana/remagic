@@ -1,5 +1,5 @@
 import warnings
-from typing import Union
+from typing import Union, Tuple
 
 from .constants import Consts
 
@@ -32,7 +32,7 @@ class Pattern:
         """
         return self + other
 
-    def mul(self, num: int) -> "Pattern":
+    def repeat(self, num: Union[int, Tuple[int, int]]) -> "Pattern":
         return self * num
 
     @property
@@ -52,8 +52,11 @@ class Pattern:
             return Pattern(self._pattern + other._pattern)
         return Pattern(self._pattern + str(other))
 
-    def __mul__(self, num: int) -> "Pattern":
-        return Pattern(self._pattern + f"{{{int(num)}}}")
+    def __mul__(self, num: Union[int, Tuple[int, int]]) -> "Pattern":
+        if isinstance(num, int):
+            return Pattern(self._pattern + f"{{{int(num)}}}")
+        elif isinstance(num, tuple):
+            return Pattern(self._pattern + f"{{{int(num[0])},{int(num[1])}}}")
 
     def __str__(self) -> str:
         return self._pattern
