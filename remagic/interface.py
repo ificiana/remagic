@@ -7,7 +7,7 @@ def create(pattern):
     if isinstance(pattern, Pattern):
         return pattern
     if isinstance(pattern, Consts):
-        return Pattern().create(pattern)
+        return Pattern().create_from_consts(pattern)
     return exactly(pattern)
 
 
