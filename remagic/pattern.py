@@ -8,7 +8,8 @@ try:
 except ImportError:
     import re  # type: ignore
 
-    warnings.warn("`regex` module not found, using builtin `re` module", ImportWarning)
+    warnings.warn("`regex` module not found, using builtin `re` module",
+                  ImportWarning)
 
 
 class Pattern:
@@ -52,7 +53,8 @@ class Pattern:
             return Pattern(self._pattern + other._pattern)
         return Pattern(self._pattern + str(other))
 
-    def __mul__(self, num: Union[int, Tuple[int, int], Tuple[int]]) -> "Pattern":
+    def __mul__(self, num: Union[int, Tuple[int, int],
+                                 Tuple[int]]) -> "Pattern":
         if isinstance(num, tuple):
             first, second = num[0], num[1] if len(num) > 1 else None
             if first == 0 and second is None:
