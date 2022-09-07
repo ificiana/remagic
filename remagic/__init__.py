@@ -41,4 +41,7 @@ __all__ = [
     "zero_or_more",
     "optional",
     "one_or_more",
+    "any_of",
+    "char_in",
+    "char_not_in",
 ]
