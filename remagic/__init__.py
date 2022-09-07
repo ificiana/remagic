@@ -8,41 +8,62 @@ __license__ = "MIT License"
 __copyright__ = "Copyright 2022 ificiana"
 
 from .constants import Consts
-from .interface import (create, optional, any_of, char_in,
-                        char_not_in, exactly, zero_or_more,
-                        one_or_more)
+from .interface import (
+    create,
+    optional,
+    any_of,
+    char_in,
+    char_not_in,
+    exactly,
+    zero_or_more,
+    one_or_more,
+)
 
 CHAR = create(Consts.CHAR)
 WHITESPACE = create(Consts.WHITESPACE)
+NOT_WHITESPACE = create(Consts.NOT_WHITESPACE)
 WS = create(Consts.WS)
+NOT_WS = create(Consts.NOT_WS)
 WORD = create(Consts.WORD)
+NOT_WORD = create(Consts.NOT_WORD)
 DIGIT = create(Consts.DIGIT)
+NOT_DIGIT = create(Consts.NOT_DIGIT)
 LETTER = create(Consts.LETTER)
+NOT_LETTER = create(Consts.NOT_LETTER)
 TAB = create(Consts.TAB)
-LINEFEED = create(Consts.LINEFEED)
+NEWLINE = create(Consts.NEWLINE)
+NOT_NEWLINE = create(Consts.NOT_NEWLINE)
 CARRIAGE_RETURN = create(Consts.CARRIAGE_RETURN)
 N = create(Consts.N)
+NOT_N = create(Consts.NOT_N)
 R = create(Consts.R)
 
 __all__ = [
-    "create",
-    "exactly",
-    "Consts",
+    "CARRIAGE_RETURN",
     "CHAR",
+    "Consts",
+    "DIGIT",
+    "LETTER",
+    "N",
+    "NEWLINE",
+    "NOT_DIGIT",
+    "NOT_LETTER",
+    "NOT_N",
+    "NOT_NEWLINE",
+    "NOT_WHITESPACE",
+    "NOT_WORD",
+    "NOT_WS",
+    "R",
+    "TAB",
+    "WHITESPACE",
     "WORD",
     "WS",
-    "WHITESPACE",
-    "LETTER",
-    "LINEFEED",
-    "CARRIAGE_RETURN",
-    "DIGIT",
-    "TAB",
-    "R",
-    "N",
-    "zero_or_more",
-    "optional",
-    "one_or_more",
     "any_of",
     "char_in",
     "char_not_in",
+    "create",
+    "exactly",
+    "one_or_more",
+    "optional",
+    "zero_or_more",
 ]
