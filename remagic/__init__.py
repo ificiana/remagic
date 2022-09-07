@@ -38,4 +38,7 @@ __all__ = [
     "TAB",
     "R",
     "N",
+    "zero_or_more",
+    "optional",
+    "one_or_more",
 ]

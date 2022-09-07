@@ -52,7 +52,7 @@ class Pattern:
             return Pattern(self._pattern + other._pattern)
         return Pattern(self._pattern + str(other))
 
-    def __mul__(self, num: Union[int, Tuple[int, int]]) -> "Pattern":
+    def __mul__(self, num: Union[int, Tuple[int, int], Tuple[int]]) -> "Pattern":
         if isinstance(num, int):
             return Pattern(self._pattern + f"{{{int(num)}}}")
         elif isinstance(num, tuple):
