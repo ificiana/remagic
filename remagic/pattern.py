@@ -71,5 +71,8 @@ class Pattern:
     def __eq__(self, other):
         return self._pattern == str(other)
 
+    def __iter__(self):
+        return iter(self._pattern)
+
     def __str__(self) -> str:
         return str(self._pattern)
