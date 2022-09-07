@@ -20,19 +20,16 @@ def optional(pattern):
 
 
 def zero_or_more(pattern, greedy=True):
-    return Pattern(pattern) * (0,) if greedy else optional(
-        Pattern(pattern) * (0,))
+    return Pattern(pattern) * (0,) if greedy else optional(Pattern(pattern) * (0,))
 
 
 def one_or_more(pattern, greedy=True):
-    return Pattern(pattern) * (1,) if greedy else optional(
-        Pattern(pattern) * (1,))
+    return Pattern(pattern) * (1,) if greedy else optional(Pattern(pattern) * (1,))
 
 
 def _char_set_items(iterable):
     # ordered set of items
-    return dict.fromkeys(list("".join([char_set_escape(i)
-                                       for i in iterable])))
+    return dict.fromkeys(list("".join([char_set_escape(i) for i in iterable])))
 
 
 def _alt_items(iterable):
