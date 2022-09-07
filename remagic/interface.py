@@ -32,6 +32,11 @@ def _char_set_items(iterable):
     return dict.fromkeys(list("".join([char_set_escape(i) for i in iterable])))
 
 
+def _alt_items(iterable):
+    # ordered set of items
+    return dict.fromkeys([escape(i) for i in iterable])
+
+
 def char_in(iterable):
     return exactly(f"[{''.join(_char_set_items(iterable))}]")
 
@@ -41,4 +46,4 @@ def char_not_in(iterable):
 
 
 def any_of(iterable):
-    return exactly(f"[{'|'.join([escape(i) for i in iterable])}]")
+    return exactly(f"{'|'.join(_alt_items(iterable))}")
