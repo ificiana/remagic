@@ -73,3 +73,43 @@ def test_multiply_patterns_within_create(input_str, num: int, expected_output):
     """
     output = create(input_str * num)._pattern
     assert output == expected_output, "{} != {}".format(output, expected_output)
+
+
+@pytest.mark.parametrize(
+    "input_str, num, expected_output",
+    [
+        ("test", 2, "testtest"),
+        (CHAR, 2, ".{2}"),
+        (WS, (2, 5), r"\s{2,5}"),
+        (DIGIT, (0,), r"\d*"),
+        (DIGIT, (1,), r"\d+"),
+        (DIGIT, (0, 1), r"\d?"),
+    ],
+)
+def test_repeat(input_str, num, expected_output):
+    """
+    :param input_str: 1st String to transform.
+    :param num: multiplier
+    :param expected_output: The expected transformation.
+    """
+    output = create(input_str * num)._pattern
+    assert output == expected_output, "{} != {}".format(output, expected_output)
+
+
+@pytest.mark.parametrize(
+    "func, greedy, expected_output",
+    [
+        (zero_or_more, True, r"\d*"),
+        (one_or_more, True, r"\d+"),
+        (zero_or_more, False, r"\d*?"),
+        (one_or_more, False, r"\d+?"),
+    ],
+)
+def test_greedy_quantifier(func, greedy, expected_output):
+    """
+    :param func: function
+    :param greedy: bool, True if greedy
+    :param expected_output: The expected transformation.
+    """
+    output = func(DIGIT, greedy=greedy)._pattern
+    assert output == expected_output, "{} != {}".format(output, expected_output)
