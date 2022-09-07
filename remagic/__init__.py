@@ -7,9 +7,10 @@ __author__ = "ificiana"
 __license__ = "MIT License"
 __copyright__ = "Copyright 2022 ificiana"
 
-
 from .constants import Consts
-from .interface import *
+from .interface import (create, optional, any_of, char_in,
+                        char_not_in, exactly, zero_or_more,
+                        one_or_more)
 
 CHAR = create(Consts.CHAR)
 WHITESPACE = create(Consts.WHITESPACE)
