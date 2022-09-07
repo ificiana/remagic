@@ -1,7 +1,6 @@
 from .constants import Consts
 from .pattern import Pattern
 from .utils import char_set_escape, escape
-from itertools import chain
 
 
 def create(pattern):
@@ -42,5 +41,4 @@ def char_not_in(iterable):
 
 
 def any_of(iterable):
-    f = [escape(i) for i in iterable]
-    return exactly(f"[{'|'.join(f)}]")
+    return exactly(f"[{'|'.join([escape(i) for i in iterable])}]")

@@ -1,11 +1,12 @@
 import re
 
+SPECIALS = re.compile(r"([.+*?^$()\[\]{}|\\])")
+CLASS_SPECIALS = re.compile(r"([\^\-\]\\])")
+
 
 def escape(string):
-    S_CHAR = r"([\.\+\*\?\^\$\(\)\[\]\{\}\|\\])"
-    return re.sub(S_CHAR, r"\\\1", str(string))
+    return SPECIALS.sub(r"\\\1", str(string))
 
 
 def char_set_escape(string):
-    S_CHAR = r"([\^\-\]\\])"
-    return re.sub(S_CHAR, r"\\\1", str(string))
+    return CLASS_SPECIALS.sub(r"\\\1", str(string))
