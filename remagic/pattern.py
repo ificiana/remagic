@@ -56,7 +56,20 @@ class Pattern:
         if isinstance(num, int):
             return Pattern(self._pattern + f"{{{int(num)}}}")
         elif isinstance(num, tuple):
-            return Pattern(self._pattern + f"{{{int(num[0])},{int(num[1])}}}")
+            a, b = num[0], num[1] if len(num) > 1 else None
+            if a == 0 and b is None:
+                return Pattern(self._pattern + f"*")
+            elif a == 1 and b is None:
+                return Pattern(self._pattern + f"+")
+            elif a == 0 and b == 1:
+                return Pattern(self._pattern + f"?")
+            elif a == b:
+                return Pattern(self._pattern + f"{{{int(a)}}}")
+            else:
+                return Pattern(self._pattern + f"{{{int(num[0])},{int(num[1])}}}")
+
+    def __eq__(self, other):
+        return self._pattern == str(other)
 
     def __str__(self) -> str:
-        return self._pattern
+        return str(self._pattern)
