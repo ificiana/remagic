@@ -1,6 +1,7 @@
 from .constants import Consts
 from .pattern import Pattern
 from .utils import char_set_escape, escape
+from itertools import chain
 
 
 def create(pattern):
@@ -27,14 +28,17 @@ def one_or_more(pattern, greedy=True):
     return Pattern(pattern) * (1,) if greedy else optional(Pattern(pattern) * (1,))
 
 
+def _char_set_items(iterable):
+    # ordered set of items
+    return dict.fromkeys(list("".join([char_set_escape(i) for i in iterable])))
+
+
 def char_in(iterable):
-    f = [char_set_escape(i) for i in iterable]
-    return exactly(f"[{''.join(f)}]")
+    return exactly(f"[{''.join(_char_set_items(iterable))}]")
 
 
 def char_not_in(iterable):
-    f = [char_set_escape(i) for i in iterable]
-    return exactly(f"[^{''.join(f)}]")
+    return exactly(f"[^{''.join(_char_set_items(iterable))}]")
 
 
 def any_of(iterable):
