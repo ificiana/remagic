@@ -9,8 +9,9 @@ try:
 except ImportError:
     import re  # type: ignore
 
-    warnings.warn("`regex` module not found,"
-                  " using builtin `re` module", ImportWarning)
+    warnings.warn(
+        "`regex` module not found," " using builtin `re` module", ImportWarning
+    )
 
 from remagic import *
 
