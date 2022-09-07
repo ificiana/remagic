@@ -1,5 +1,5 @@
 import warnings
-from typing import Union, Tuple
+from typing import Tuple, Union
 
 from .constants import Consts
 
@@ -53,20 +53,18 @@ class Pattern:
         return Pattern(self._pattern + str(other))
 
     def __mul__(self, num: Union[int, Tuple[int, int], Tuple[int]]) -> "Pattern":
-        if isinstance(num, int):
-            return Pattern(self._pattern + f"{{{int(num)}}}")
-        elif isinstance(num, tuple):
-            a, b = num[0], num[1] if len(num) > 1 else None
-            if a == 0 and b is None:
-                return Pattern(self._pattern + f"*")
-            elif a == 1 and b is None:
-                return Pattern(self._pattern + f"+")
-            elif a == 0 and b == 1:
-                return Pattern(self._pattern + f"?")
-            elif a == b:
-                return Pattern(self._pattern + f"{{{int(a)}}}")
-            else:
-                return Pattern(self._pattern + f"{{{int(num[0])},{int(num[1])}}}")
+        if isinstance(num, tuple):
+            first, second = num[0], num[1] if len(num) > 1 else None
+            if first == 0 and second is None:
+                return Pattern(self._pattern + "*")
+            if first == 1 and second is None:
+                return Pattern(self._pattern + "+")
+            if first == 0 and second == 1:
+                return Pattern(self._pattern + "?")
+            if first == second:
+                return Pattern(self._pattern + f"{{{int(first)}}}")
+            return Pattern(self._pattern + f"{{{int(num[0])},{int(num[1])}}}")
+        return Pattern(self._pattern + f"{{{int(num)}}}")
 
     def __eq__(self, other):
         return self._pattern == str(other)

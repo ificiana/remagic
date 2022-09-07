@@ -21,7 +21,7 @@ from remagic import *
         (CHAR, "."),
         (CHAR + N, r".\n"),
         (WS * 5, r"\s{5}"),
-        (WS * (1, 3), r"\s{1,3}")
+        (WS * (1, 3), r"\s{1,3}"),
     ],
 )
 def test_compile_pattern(input_str, expected_output):
