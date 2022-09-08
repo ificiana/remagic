@@ -22,7 +22,7 @@ class Pattern:
         return self
 
     def compile(self) -> "re.Pattern":
-        return re.compile(self._pattern)
+        return re.compile(str(self._pattern))
 
     def add(self, other: Union[str, "Pattern"]):
         """
