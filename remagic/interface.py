@@ -20,11 +20,15 @@ def optional(pattern):
 
 
 def zero_or_more(pattern, greedy=True):
-    return Pattern(pattern) * (0,) if greedy else optional(Pattern(pattern) * (0,))
+    if greedy:
+        return Pattern(pattern) * (0,)
+    return optional(Pattern(pattern) * (0,))
 
 
 def one_or_more(pattern, greedy=True):
-    return Pattern(pattern) * (1,) if greedy else optional(Pattern(pattern) * (1,))
+    if greedy:
+        return Pattern(pattern) * (1,)
+    return optional(Pattern(pattern) * (1,))
 
 
 def _char_set_items(iterable):
@@ -68,6 +72,6 @@ def not_after(pattern):
 def ref(reference):
     if isinstance(reference, int) and reference > 0:
         return rf"\{reference}"
-    elif isinstance(reference, str):
+    if isinstance(reference, str):
         return rf"(?P={reference})"
     return Pattern(reference)
