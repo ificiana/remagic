@@ -17,6 +17,10 @@ from .interface import (
     exactly,
     zero_or_more,
     one_or_more,
+    before,
+    after,
+    not_after,
+    not_before,
 )
 
 CHAR = create(Consts.CHAR)
@@ -58,11 +62,15 @@ __all__ = [
     "WHITESPACE",
     "WORD",
     "WS",
+    "after",
     "any_of",
+    "before",
     "char_in",
     "char_not_in",
     "create",
     "exactly",
+    "not_after",
+    "not_before",
     "one_or_more",
     "optional",
     "zero_or_more",

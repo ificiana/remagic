@@ -47,3 +47,19 @@ def char_not_in(iterable):
 
 def any_of(iterable):
     return exactly(f"{'|'.join(_alt_items(iterable))}")
+
+
+def before(pattern):
+    return rf"(?={Pattern(pattern)})"
+
+
+def not_before(pattern):
+    return rf"(?!={Pattern(pattern)})"
+
+
+def after(pattern):
+    return rf"(?<={Pattern(pattern)})"
+
+
+def not_after(pattern):
+    return rf"(?<!={Pattern(pattern)})"
