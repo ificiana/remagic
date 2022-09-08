@@ -35,7 +35,7 @@ jobs:
         run: pip install --upgrade pip poetry
 
       - name: Install poetry
-        run: poetry install
+        run: poetry install --no-dev
 
       - name: Run make ci
         run: make ci
