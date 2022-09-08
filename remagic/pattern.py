@@ -35,6 +35,19 @@ class Pattern:
     def repeat(self, num: Union[int, Tuple[int, int]]) -> "Pattern":
         return self * num
 
+    def label(self, name):
+        return Pattern(rf"(?P<{name}>{self._pattern})")
+
+    def group(self):
+        return Pattern(rf"({self._pattern})")
+
+    def ref(self, reference):
+        if isinstance(reference, int) and reference > 0:
+            return self.add(rf"\{reference}")
+        elif isinstance(reference, str):
+            return self.add(rf"(?P={reference})")
+        return self.add(Pattern(reference))
+
     @property
     def pattern(self) -> str:
         return self._pattern

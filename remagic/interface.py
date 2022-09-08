@@ -63,3 +63,11 @@ def after(pattern):
 
 def not_after(pattern):
     return rf"(?<!={Pattern(pattern)})"
+
+
+def ref(reference):
+    if isinstance(reference, int) and reference > 0:
+        return rf"\{reference}"
+    elif isinstance(reference, str):
+        return rf"(?P={reference})"
+    return Pattern(reference)
