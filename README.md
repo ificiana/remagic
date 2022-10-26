@@ -1,4 +1,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/ificiana/remagic/badge.svg?branch=main)](https://coveralls.io/github/ificiana/remagic?branch=main)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/remagic)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/remagic)
+![PyPI - License](https://img.shields.io/pypi/l/remagic)
 
 # remagic
 Working with regex made easier! 
@@ -10,6 +13,8 @@ pattern1 = create(DIGIT)  # matches any digit
 pattern2 = char_in("aeiou")  # matches any char in "aeiou"
 pattern3 = ~pattern2  # negates the pattern in pattern2, 
 # i.e. match everything except characters in "aeiou"
+# Note: remagic 0.1.1 doesn't support the ~ syntax
+# use char_not_in("aeiou") instead
 pattern4 = pattern1 + pattern3
 # finally compile, use standard flags as optional argument
 R = pattern4.compile()
