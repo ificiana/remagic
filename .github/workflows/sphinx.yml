@@ -1,14 +1,24 @@
 name: Sphinx build
 
 on:
-  push
-#  restrict this later
+  pull_request:
+    branches: [ main, dev ]
+    paths:
+      - '**/README.md'
+      - 'docs/**'
+  push:
+    branches: [ main, dev ]
+    paths:
+      - '**/README.md'
+      - 'docs/**'
+# later, allow only main branch
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup python
         uses: actions/setup-python@v2
         with:
@@ -17,17 +27,13 @@ jobs:
       - name: Upgrade pip
         run: pip install --upgrade pip poetry
 
-      - name: Install poetry
-        run: poetry install --only main
+      - name: Dependencies
+        run: poetry install --with docs
 
-      - name: Run make ci
-        run: make ci
-
-      - name: Build docs
+      - name: Build HTML
         run: |
           cd docs
-          make html
-
+          poetry run make html
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
@@ -36,7 +42,8 @@ jobs:
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
-        if: github.ref == 'refs/heads/main'
+        if: github.event_name == 'push'
+        #        if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: docs/build/html
