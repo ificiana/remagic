@@ -1,22 +1,34 @@
 name: Sphinx build
 
-on: push
-# later, allow only main branch
+on:
+  push
+#  restrict this later
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Dependencies
-        run: pip install furo
-      - name: Build HTML
-        uses: ammaraskar/sphinx-action@master
+      - name: Upgrade pip
+        run: pip install --upgrade pip poetry
+
+      - name: Install poetry
+        run: poetry install --only main
+
+      - name: Run make ci
+        run: make ci
+
+      - name: Build docs
+        run: |
+          cd docs
+          make html
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: html-docs
           path: docs/build/html/
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
