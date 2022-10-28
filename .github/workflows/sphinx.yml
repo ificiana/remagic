@@ -1,6 +1,7 @@
 name: Sphinx build
 
 on: push
+# later, allow only main branch
 
 jobs:
   build:
@@ -14,6 +15,8 @@ jobs:
         with:
           name: html-docs
           path: docs/build/html/
+      - name: Dependencies
+        run: pip install furo
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
