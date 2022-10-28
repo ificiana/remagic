@@ -8,9 +8,20 @@ __license__ = "MIT License"
 __copyright__ = "Copyright 2022 ificiana"
 
 from .constants import Consts
-from .interface import (after, any_of, before, char_in, char_not_in, create,
-                        exactly, not_after, not_before, one_or_more, optional,
-                        zero_or_more)
+from .interface import (
+    after,
+    any_of,
+    before,
+    char_in,
+    char_not_in,
+    create,
+    exactly,
+    not_after,
+    not_before,
+    one_or_more,
+    optional,
+    zero_or_more,
+)
 
 CHAR = create(Consts.CHAR)
 WHITESPACE = create(Consts.WHITESPACE)
