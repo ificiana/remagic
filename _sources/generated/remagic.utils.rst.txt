@@ -1,0 +1,30 @@
+﻿remagic.utils
+=============
+
+.. automodule:: remagic.utils
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      char_set_escape
+      escape
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

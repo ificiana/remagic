@@ -1,0 +1,23 @@
+﻿remagic
+=======
+
+.. automodule:: remagic
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

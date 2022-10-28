@@ -1,0 +1,29 @@
+﻿remagic.pattern
+===============
+
+.. automodule:: remagic.pattern
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Pattern
+   
+   
+
+   
+   
+   
+
+
+

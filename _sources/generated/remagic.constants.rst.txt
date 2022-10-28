@@ -1,0 +1,29 @@
+﻿remagic.constants
+=================
+
+.. automodule:: remagic.constants
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      Consts
+   
+   
+
+   
+   
+   
+
+
+

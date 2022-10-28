@@ -1,0 +1,41 @@
+﻿remagic.interface
+=================
+
+.. automodule:: remagic.interface
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      after
+      any_of
+      before
+      char_in
+      char_not_in
+      create
+      exactly
+      not_after
+      not_before
+      one_or_more
+      optional
+      ref
+      zero_or_more
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+
