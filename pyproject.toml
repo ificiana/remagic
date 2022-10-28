@@ -20,6 +20,11 @@ pathlib2 = "^2.3.7"
 scandir = "^1.10.0"
 coveralls = "^3.3.1"
 twine = "^4.0.1"
+
+[tool.poetry.group.docs]
+optional = true
+
+[tool.poetry.group.docs.dependencies]
 Sphinx = "^4.3.2"
 furo = "^2022.9.29"
 
