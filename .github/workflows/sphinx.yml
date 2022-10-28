@@ -23,7 +23,7 @@ jobs:
       - name: Build HTML
         run: |
           cd docs
-          make html
+          poetry run make html
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
