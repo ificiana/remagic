@@ -68,7 +68,7 @@ class Pattern:
         return Pattern(self._pattern + str(other))
 
     def __mul__(
-        self, num: Union[int, Tuple[int, int], Tuple[int]]  # noqa: E501
+            self, num: Union[int, Tuple[int, int], Tuple[int]]  # noqa: E501
     ) -> "Pattern":
         if isinstance(num, tuple):
             first, second = num[0], num[1] if len(num) > 1 else None
