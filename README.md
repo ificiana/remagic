@@ -4,11 +4,13 @@
 ![PyPI - License](https://img.shields.io/pypi/l/remagic)
 
 # remagic
-Working with regex made easier! 
+
+Working with regex made easier!
 Partly inspired from `magic-regexp` for Node
 
 ```py
 from remagic import *
+
 pattern1 = create(DIGIT)  # matches any digit
 pattern2 = char_in("aeiou")  # matches any char in "aeiou"
 pattern3 = ~pattern2  # negates the pattern in pattern2, 
@@ -21,14 +23,17 @@ R = pattern4.compile()
 # use the regex later
 ``` 
 
-## Installation 
+## Installation
+
 Install from PyPI:
 `pip install remagic`
 
 ## Work in Progress!
 
 ### Documentation
+
 TODO: [docs](https://ificiana.github.io/remagic)
 
 ### Known bugs
+
 - improper behaviour with `any_of`
