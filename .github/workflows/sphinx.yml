@@ -8,6 +8,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Dependencies
+        run: pip install furo
       - name: Build HTML
         uses: ammaraskar/sphinx-action@master
       - name: Upload artifacts
@@ -15,8 +17,6 @@ jobs:
         with:
           name: html-docs
           path: docs/build/html/
-      - name: Dependencies
-        run: pip install furo
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
