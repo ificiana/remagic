@@ -8,15 +8,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.11
+
+      - name: Upgrade pip
+        run: pip install --upgrade pip poetry
+
       - name: Dependencies
-        run: pip install furo
+        run: poetry install
+
       - name: Build HTML
-        uses: ammaraskar/sphinx-action@master
+        run: |
+          cd docs
+          make html
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: html-docs
           path: docs/build/html/
+
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
