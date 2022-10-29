@@ -35,6 +35,4 @@ def test_compile_pattern(input_str, expected_output):
     :param expected_output: Pattern to compile in regex or re.
     """
     output = create(input_str).compile()
-    assert output == re.compile(expected_output), "{} != {}".format(
-        output, expected_output
-    )
+    assert output == re.compile(expected_output), f"{output} != {expected_output}"

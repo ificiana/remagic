@@ -13,9 +13,7 @@ from remagic import *
 )
 def test_refs(capture, name, expected_output):
     output = create(capture).label("text").ref("text")
-    assert output._pattern == expected_output, "{} != {}".format(
-        output, expected_output
-    )
+    assert output == expected_output, f"{output} != {expected_output}"
 
 
 @pytest.mark.parametrize(
@@ -26,6 +24,4 @@ def test_refs(capture, name, expected_output):
 )
 def test_groups(capture, expected_output):
     output = create(capture).group().ref(1)
-    assert output._pattern == expected_output, "{} != {}".format(
-        output, expected_output
-    )
+    assert output == expected_output, f"{output} != {expected_output}"
