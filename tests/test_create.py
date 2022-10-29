@@ -67,7 +67,7 @@ def test_add_patterns_within_create(input_str1, input_str2, expected_output):
         (CHAR, 2, ".{2}"),
     ],
 )
-def test_multiply_patterns_within_create(input_str, num: int, expected_output):
+def test_multiply_patterns_within_create(input_str, num, expected_output):
     """
     :param input_str: 1st String to transform.
     :param num: multiplier
