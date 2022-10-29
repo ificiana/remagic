@@ -17,9 +17,7 @@ from remagic import *
 )
 def test_char_in(iterable, expected_output):
     output = char_in(iterable)
-    assert output._pattern == expected_output, "{} != {}".format(
-        output, expected_output
-    )
+    assert output == expected_output, f"{output} != {expected_output}"
 
 
 @pytest.mark.parametrize(
@@ -34,9 +32,7 @@ def test_char_in(iterable, expected_output):
 )
 def test_char_not_in(iterable, expected_output):
     output = char_not_in(iterable)
-    assert output._pattern == expected_output, "{} != {}".format(
-        output, expected_output
-    )
+    assert output == expected_output, f"{output} != {expected_output}"
 
 
 @pytest.mark.parametrize(
@@ -51,6 +47,4 @@ def test_char_not_in(iterable, expected_output):
 )
 def test_char_in(iterable, expected_output):
     output = any_of(iterable)
-    assert output._pattern == expected_output, "{} != {}".format(
-        output, expected_output
-    )
+    assert output == expected_output, f"{output} != {expected_output}"

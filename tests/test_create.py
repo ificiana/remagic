@@ -19,7 +19,7 @@ def test_create_constants(const, expected_output):
     :param expected_output: The expected transformation.
     """
     output = const._pattern
-    assert output == expected_output, "{} != {}".format(output, expected_output)
+    assert output == expected_output, f"{output} != {expected_output}"
 
 
 @pytest.mark.parametrize(
@@ -37,7 +37,7 @@ def test_create_pattern(input_str, expected_output):
     :param expected_output: The expected transformation.
     """
     output = create(input_str)._pattern
-    assert output == expected_output, "{} != {}".format(output, expected_output)
+    assert output == expected_output, f"{output} != {expected_output}"
 
 
 @pytest.mark.parametrize(
@@ -57,7 +57,7 @@ def test_add_patterns_within_create(input_str1, input_str2, expected_output):
     :param expected_output: The expected transformation.
     """
     output = create(input_str1 + input_str2)._pattern
-    assert output == expected_output, "{} != {}".format(output, expected_output)
+    assert output == expected_output, f"{output} != {expected_output}"
 
 
 @pytest.mark.parametrize(
@@ -74,7 +74,7 @@ def test_multiply_patterns_within_create(input_str, num: int, expected_output):
     :param expected_output: The expected transformation.
     """
     output = create(input_str * num)._pattern
-    assert output == expected_output, "{} != {}".format(output, expected_output)
+    assert output == expected_output, f"{output} != {expected_output}"
 
 
 @pytest.mark.parametrize(
@@ -95,7 +95,7 @@ def test_repeat(input_str, num, expected_output):
     :param expected_output: The expected transformation.
     """
     output = create(input_str * num)._pattern
-    assert output == expected_output, "{} != {}".format(output, expected_output)
+    assert output == expected_output, f"{output} != {expected_output}"
 
 
 @pytest.mark.parametrize(
@@ -114,4 +114,4 @@ def test_greedy_quantifier(func, greedy, expected_output):
     :param expected_output: The expected transformation.
     """
     output = func(DIGIT, greedy=greedy)._pattern
-    assert output == expected_output, "{} != {}".format(output, expected_output)
+    assert output == expected_output, f"{output} != {expected_output}"
