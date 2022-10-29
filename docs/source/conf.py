@@ -57,6 +57,9 @@ exclude_patterns: List[str] = []
 # a list of builtin themes.
 #
 html_theme = "furo"
+html_theme_options = {
+    "announcement": "<em>Note: This documentation is far from complete</em>",
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
