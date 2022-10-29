@@ -3,10 +3,11 @@ from typing import Tuple, Union
 import warnings
 
 from .constants import Consts
+from .exceptions import RemagicException
 
-try:
+try:  # pragma: no cover
     import regex as re
-except ImportError:
+except ImportError:  # pragma: no cover
     import re  # type: ignore[no-redef]
 
     warnings.warn("`regex` module not found, using builtin `re` module", ImportWarning)
@@ -47,11 +48,11 @@ class Pattern:
             return self.add(rf"\{reference}")
         if isinstance(reference, str):
             return self.add(rf"(?P={reference})")
-        return self.add(Pattern(reference))
+        raise RemagicException("Only positive integers and strings are allowed")
 
     @property
     def pattern(self) -> str:
-        return self._pattern
+        return self._pattern  # pragma: no cover
 
     @pattern.getter
     def pattern(self) -> str:
@@ -68,6 +69,9 @@ class Pattern:
 
     def __mul__(self, num: Union[int, Tuple[int, ...]]) -> "Pattern":
         if isinstance(num, tuple):
+            for i in num:
+                if i < 0:
+                    raise RemagicException("Value should be positive")
             if len(num) == 1:
                 (num,) = num
                 if num == 0:
@@ -78,10 +82,10 @@ class Pattern:
                     temp = f"{{{num},}}"
             else:
                 if len(num) > 2:
-                    raise ValueError("More than 2 values provided")
+                    raise RemagicException("More than 2 values provided")
                 first, second = num[0], num[1]
                 if num[0] > num[1]:
-                    raise ValueError("Second value cannot be less than the first")
+                    raise RemagicException("Second value cannot be less than the first")
                 if first == 0 and second == 1:
                     temp = "?"
                 elif first == second:
@@ -89,13 +93,15 @@ class Pattern:
                 else:
                     temp = f"{{{first},{second}}}"
             return Pattern(self._pattern + temp)
+        if num < 0:
+            raise RemagicException("Value should be positive")
         return Pattern(self._pattern + f"{{{int(num)}}}")
 
     def __eq__(self, other):
         return self._pattern == str(other)
 
     def __iter__(self):
-        return iter(self._pattern)
+        return iter(self._pattern)  # pragma: no cover
 
     def __str__(self) -> str:
         return str(self._pattern)
