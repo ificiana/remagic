@@ -41,7 +41,7 @@ formatting: codestyle
 .PHONY: test
 test:
 	PYTHONPATH=$(PYTHONPATH) poetry run pytest --cov-report term-missing --cov=remagic tests/
-	poetry run coverage run -m pytest
+	#poetry run coverage run -m pytest
 
 .PHONY: check-codestyle
 check-codestyle:
