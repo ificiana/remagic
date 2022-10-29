@@ -66,20 +66,29 @@ class Pattern:
             return Pattern(self._pattern + other._pattern)
         return Pattern(self._pattern + str(other))
 
-    def __mul__(
-        self, num: Union[int, Tuple[int, int], Tuple[int]]  # noqa: E501
-    ) -> "Pattern":
+    def __mul__(self, num: Union[int, Tuple[int, ...]]) -> "Pattern":
         if isinstance(num, tuple):
-            first, second = num[0], num[1] if len(num) > 1 else None
-            if first == 0 and second is None:
-                return Pattern(self._pattern + "*")
-            if first == 1 and second is None:
-                return Pattern(self._pattern + "+")
-            if first == 0 and second == 1:
-                return Pattern(self._pattern + "?")
-            if first == second:
-                return Pattern(self._pattern + f"{{{int(first)}}}")
-            return Pattern(self._pattern + f"{{{int(num[0])},{int(num[1])}}}")
+            if len(num) == 1:
+                (num,) = num
+                if num == 0:
+                    temp = "*"
+                elif num == 1:
+                    temp = "+"
+                else:
+                    temp = f"{{{num},}}"
+            else:
+                if len(num) > 2:
+                    raise ValueError("More than 2 values provided")
+                first, second = num[0], num[1]
+                if num[0] > num[1]:
+                    raise ValueError("Second value cannot be less than the first")
+                if first == 0 and second == 1:
+                    temp = "?"
+                elif first == second:
+                    temp = f"{{{first}}}"
+                else:
+                    temp = f"{{{first},{second}}}"
+            return Pattern(self._pattern + temp)
         return Pattern(self._pattern + f"{{{int(num)}}}")
 
     def __eq__(self, other):
