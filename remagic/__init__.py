@@ -7,6 +7,8 @@ __author__ = "ificiana"
 __license__ = "MIT License"
 __copyright__ = "Copyright 2022 ificiana"
 
+import sys
+
 from .constants import Consts
 from .interface import (
     after,
@@ -20,8 +22,24 @@ from .interface import (
     not_before,
     one_or_more,
     optional,
+    ref,
     zero_or_more,
 )
+
+if sys.version_info >= (3, 8):  # pragma: no cover
+    from importlib import metadata as importlib_metadata
+else:
+    import importlib_metadata
+
+
+def get_version() -> str:
+    try:
+        return str(importlib_metadata.version(__name__))
+    except importlib_metadata.PackageNotFoundError:  # pragma: no cover
+        return "unknown"
+
+
+version: str = get_version()
 
 CHAR = create(Consts.CHAR)
 WHITESPACE = create(Consts.WHITESPACE)
@@ -73,5 +91,8 @@ __all__ = [
     "not_before",
     "one_or_more",
     "optional",
+    "version",
+    "get_version",
     "zero_or_more",
+    "ref",
 ]
