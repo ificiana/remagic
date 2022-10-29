@@ -1,5 +1,3 @@
-from typing import Union
-
 from enum import Enum
 
 
@@ -22,11 +20,3 @@ class Consts(Enum):
     NOT_N = r"\N"
     CARRIAGE_RETURN = r"\r"
     R = r"\r"
-
-    def __add__(self, other: Union["Consts", str]):
-        if isinstance(other, Consts):
-            return self.value + other.value
-        return self.value + str(other)
-
-    def __mul__(self, other: int):
-        return self.value + f"{{{int(other)}}}"

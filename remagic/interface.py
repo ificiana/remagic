@@ -1,4 +1,5 @@
 from .constants import Consts
+from .exceptions import RemagicException
 from .pattern import Pattern
 from .utils import char_set_escape, escape
 
@@ -53,25 +54,28 @@ def any_of(iterable):
     return exactly(f"{'|'.join(_alt_items(iterable))}")
 
 
-def before(pattern):
-    return rf"(?={Pattern(pattern)})"
+# TODO: Write tests for `before`, `not_before`, `after`, `not_after`
 
 
-def not_before(pattern):
-    return rf"(?!={Pattern(pattern)})"
+def before(pattern):  # pragma: no cover
+    return rf"(?={create(pattern)})"
 
 
-def after(pattern):
-    return rf"(?<={Pattern(pattern)})"
+def not_before(pattern):  # pragma: no cover
+    return rf"(?!={create(pattern)})"
 
 
-def not_after(pattern):
-    return rf"(?<!={Pattern(pattern)})"
+def after(pattern):  # pragma: no cover
+    return rf"(?<={create(pattern)})"
+
+
+def not_after(pattern):  # pragma: no cover
+    return rf"(?<!={create(pattern)})"
 
 
 def ref(reference):
     if isinstance(reference, int) and reference > 0:
-        return rf"\{reference}"
+        return exactly(rf"\{reference}")
     if isinstance(reference, str):
-        return rf"(?P={reference})"
-    return Pattern(reference)
+        return exactly(rf"(?P={reference})")
+    raise RemagicException("Only positive integers and strings are allowed")
