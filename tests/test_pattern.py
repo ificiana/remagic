@@ -22,6 +22,4 @@ def test_pattern_addition(input_pattern1, input_pattern2, expected_output):
     :param expected_output: The expected transformation.
     """
     output = create(input_pattern1) + create(input_pattern2)
-    assert output._pattern == expected_output, "{} != {}".format(
-        output, expected_output
-    )
+    assert output == expected_output, f"{output} != {expected_output}"
