@@ -45,6 +45,6 @@ def test_char_not_in(iterable, expected_output):
         ({1: "one", 2: "two"}.values(), "one|two"),
     ],
 )
-def test_char_in(iterable, expected_output):
+def test_any_of(iterable, expected_output):
     output = any_of(iterable)
     assert output == expected_output, f"{output} != {expected_output}"

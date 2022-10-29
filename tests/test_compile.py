@@ -5,9 +5,9 @@ import warnings
 import pytest
 
 try:
-    import regex as re  # type: ignore
+    import regex as re
 except ImportError:
-    import re  # type: ignore
+    import re  # type: ignore[no-redef]
 
     warnings.warn(
         "`regex` module not found," " using builtin `re` module", ImportWarning

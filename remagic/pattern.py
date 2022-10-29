@@ -1,12 +1,13 @@
-import warnings
 from typing import Tuple, Union
+
+import warnings
 
 from .constants import Consts
 
 try:
-    import regex as re  # type: ignore
+    import regex as re
 except ImportError:
-    import re  # type: ignore
+    import re  # type: ignore[no-redef]
 
     warnings.warn("`regex` module not found, using builtin `re` module", ImportWarning)
 
@@ -24,7 +25,7 @@ class Pattern:
     def compile(self) -> "re.Pattern":
         return re.compile(str(self._pattern))
 
-    def add(self, other: Union[str, "Pattern"]):
+    def add(self, other: Union[str, "Pattern"]) -> "Pattern":
         """
         Function to add two Patterns
         :param other: Pattern

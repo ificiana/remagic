@@ -1,5 +1,6 @@
-from enum import Enum
 from typing import Union
+
+from enum import Enum
 
 
 class Consts(Enum):
