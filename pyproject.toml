@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "remagic"
-version = "0.1.1"
+version = "0.1.2a0"
 description = "Working with RegEx made easy!"
 license = "MIT"
 authors = ["Ificiana <ificiana@gmail.com>"]
