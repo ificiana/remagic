@@ -9,7 +9,6 @@ __copyright__ = "Copyright 2022 ificiana"
 
 import sys
 
-from .constants import Consts
 from .interface import (
     after,
     any_of,
@@ -41,29 +40,23 @@ def get_version() -> str:
 
 version: str = get_version()
 
-CHAR = create(Consts.CHAR)
-WHITESPACE = create(Consts.WHITESPACE)
-NOT_WHITESPACE = create(Consts.NOT_WHITESPACE)
-WS = create(Consts.WS)
-NOT_WS = create(Consts.NOT_WS)
-WORD = create(Consts.WORD)
-NOT_WORD = create(Consts.NOT_WORD)
-DIGIT = create(Consts.DIGIT)
-NOT_DIGIT = create(Consts.NOT_DIGIT)
-LETTER = create(Consts.LETTER)
-NOT_LETTER = create(Consts.NOT_LETTER)
-TAB = create(Consts.TAB)
-NEWLINE = create(Consts.NEWLINE)
-NOT_NEWLINE = create(Consts.NOT_NEWLINE)
-CARRIAGE_RETURN = create(Consts.CARRIAGE_RETURN)
-N = create(Consts.N)
-NOT_N = create(Consts.NOT_N)
-R = create(Consts.R)
+CHAR = create(r".")
+WHITESPACE = WS = create(r"\s")
+NOT_WHITESPACE = NOT_WS = create(r"\S")
+WORD = create(r"\w")
+NOT_WORD = create(r"\W")
+DIGIT = create(r"\d")
+NOT_DIGIT = create(r"\D")
+LETTER = create(r"[a-zA-Z]")
+NOT_LETTER = create(r"[^a-zA-Z]")
+TAB = create(r"\t")
+NEWLINE = N = create(r"\n")
+NOT_NEWLINE = NOT_N = create(r"\N")
+CARRIAGE_RETURN = R = create(r"\r")
 
 __all__ = [
     "CARRIAGE_RETURN",
     "CHAR",
-    "Consts",
     "DIGIT",
     "LETTER",
     "N",

@@ -2,7 +2,6 @@ from typing import Tuple, Union
 
 import warnings
 
-from .constants import Consts
 from .exceptions import RemagicException
 
 try:  # pragma: no cover
@@ -18,10 +17,6 @@ class Pattern:
 
     def __init__(self, pattern=""):
         self._pattern = pattern
-
-    def create_from_consts(self, const: Consts) -> "Pattern":
-        self._pattern = const.value
-        return self
 
     def compile(self) -> "re.Pattern":
         return re.compile(str(self._pattern))
