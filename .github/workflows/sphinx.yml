@@ -34,7 +34,6 @@ jobs:
         run: |
           cd docs
           poetry run make html
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
