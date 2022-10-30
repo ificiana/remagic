@@ -1,4 +1,3 @@
-from .constants import Consts
 from .exceptions import RemagicException
 from .pattern import Pattern
 from .utils import char_set_escape, escape
@@ -7,8 +6,6 @@ from .utils import char_set_escape, escape
 def create(pattern):
     if isinstance(pattern, Pattern):
         return pattern
-    if isinstance(pattern, Consts):
-        return Pattern().create_from_consts(pattern)
     return exactly(pattern)
 
 
