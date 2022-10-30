@@ -1,12 +1,6 @@
 """
 Implements RegEx abstraction logic, for easy working with RegEx in Python.
 """
-__title__ = "remagic"
-__version__ = "0.1.1"
-__author__ = "ificiana"
-__license__ = "MIT License"
-__copyright__ = "Copyright 2022 ificiana"
-
 import sys
 
 from .interface import (
@@ -31,14 +25,27 @@ else:
     import importlib_metadata  # pragma: no cover
 
 
+def _metadata():
+    return importlib_metadata.metadata(__name__)
+
+
+__metadata__ = _metadata()
+
+
 def get_version() -> str:
     try:
-        return str(importlib_metadata.version(__name__))
+        return str(__metadata__["version"])
     except importlib_metadata.PackageNotFoundError:  # pragma: no cover
         return "unknown"
 
 
 version: str = get_version()
+
+__title__ = __metadata__["name"]
+__version__ = version
+__author__ = __metadata__["author"]
+__license__ = __metadata__["licence"]
+__copyright__ = "Copyright 2022 Ificiana"
 
 CHAR = create(r".")
 WHITESPACE = WS = create(r"\s")
