@@ -7,17 +7,18 @@ build-backend = "poetry.core.masonry.api"
 name = "remagic"
 version = "0.1.1"
 description = "Working with RegEx made easy!"
-readme = "README.md"
-authors = ["Ificiana <ificiana@gmail.com>"]
 license = "MIT"
+authors = ["Ificiana <ificiana@gmail.com>"]
+readme = "README.md"
+homepage = "https://github.com/ificiana/remagic"
 repository = "https://github.com/ificiana/remagic"
-homepage = "https://ificiana.github.io/remagic"
+documentation = "https://ificiana.github.io/remagic"
 
 # Keywords description https://python-poetry.org/docs/pyproject/#keywords
 keywords = ["regex", "remagic"]
 
 # Pypi classifiers: https://pypi.org/classifiers/
-classifiers = [#! Update me
+classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
@@ -27,12 +28,21 @@ classifiers = [#! Update me
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
 ]
+packages = [
+    { include = "remagic" },
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.7.2"
 importlib_metadata = { version = "^4.5.0", python = "<3.8" }
 regex = "^2022.9.13"
+
+[tool.poetry.extras]
+regex = ["regex"]
 
 [tool.poetry.dev-dependencies]
 bandit = "^1.7.1"
