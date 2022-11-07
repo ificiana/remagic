@@ -90,7 +90,7 @@ class Pattern:
             return Pattern(self._pattern + temp)
         if num < 0:
             raise RemagicException("Value should be positive")
-        return Pattern(self._pattern + f"{{{int(num)}}}")
+        return Pattern(f"{self._pattern}{{{int(num)}}}")
 
     def __eq__(self, other):
         return self._pattern == str(other)

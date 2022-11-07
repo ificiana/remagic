@@ -4,9 +4,7 @@ from .utils import char_set_escape, escape
 
 
 def create(pattern):
-    if isinstance(pattern, Pattern):
-        return pattern
-    return exactly(pattern)
+    return pattern if isinstance(pattern, Pattern) else exactly(pattern)
 
 
 def exactly(pattern):
