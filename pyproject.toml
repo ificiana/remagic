@@ -38,7 +38,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.7.2"
-importlib_metadata = { version = "^5.0.0", python = "<3.8" }
+importlib_metadata = { version = "^6.0.0", python = "<3.8" }
 regex = "^2022.9.13"
 
 [tool.poetry.extras]
