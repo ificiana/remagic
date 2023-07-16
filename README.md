@@ -2,6 +2,7 @@
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/remagic)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/remagic)
 ![PyPI - License](https://img.shields.io/pypi/l/remagic)
+[![CodeFactor](https://www.codefactor.io/repository/github/ificiana/remagic/badge)](https://www.codefactor.io/repository/github/ificiana/remagic)
 
 # remagic
 
