@@ -101,7 +101,8 @@ def test_refs() -> None:
 
 def test_readme_example() -> None:
     year = rm.DIGIT.times(4).group("year")
-    date = year + "-" + rm.DIGIT.times(2).group("month")
+    month = rm.DIGIT.times(2).group("month")
+    date = rm.START + year + "-" + month + rm.END
     match = date.compile().fullmatch("2027-01")
     assert match
     assert match["year"] == "2027"

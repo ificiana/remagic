@@ -1,40 +1,59 @@
-[![Coverage Status](https://coveralls.io/repos/github/ificiana/remagic/badge.svg?branch=main)](https://coveralls.io/github/ificiana/remagic?branch=main)
-![PyPI - Downloads](https://img.shields.io/pypi/dm/remagic)
+[![build](https://github.com/ificiana/remagic/actions/workflows/build.yml/badge.svg)](https://github.com/ificiana/remagic/actions/workflows/build.yml)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/remagic)
 ![PyPI - License](https://img.shields.io/pypi/l/remagic)
-[![CodeFactor](https://www.codefactor.io/repository/github/ificiana/remagic/badge)](https://www.codefactor.io/repository/github/ificiana/remagic)
 
 # remagic
 
-Working with regex made easier!
-Partly inspired from `magic-regexp` for Node
+Build regular expressions from composable, typed Python objects. Partly inspired
+by `magic-regexp` for Node.
 
 ```py
-from remagic import *
+import remagic as rm
 
-pattern1 = create(DIGIT)  # matches any digit
-pattern2 = char_in("aeiou")  # matches any char in "aeiou"
-pattern3 = ~pattern2  # negates the pattern in pattern2, 
-# i.e. match everything except characters in "aeiou"
-# Note: remagic 0.1.1 doesn't support the ~ syntax
-# use char_not_in("aeiou") instead
-pattern4 = pattern1 + pattern3
-# finally compile, use standard flags as optional argument
-R = pattern4.compile()
-# use the regex later
-``` 
+year = rm.DIGIT.times(4).group("year")
+month = rm.DIGIT.times(2).group("month")
+date = rm.START + year + "-" + month + rm.END
+
+match = date.compile().fullmatch("2027-01")
+assert match and match["year"] == "2027"
+```
+
+Patterns are immutable. Strings are matched literally, `+` concatenates, `|`
+alternates, and `(?:...)` is added only where precedence needs it:
+
+```py
+str((rm.exactly("a") | "b").times(2))  # (?:a|b){2}
+```
 
 ## Installation
 
-Install from PyPI:
-`pip install remagic`
+```sh
+uv add remagic            # or: pip install remagic
+uv add "remagic[regex]"   # optional: the `regex` engine
+```
 
-## Work in Progress!
+Requires Python 3.11+. Patterns compile with the standard `re` module. Features
+that only `regex` supports, such as `unicode_property("L")`, switch to it
+automatically and need the `regex` extra.
 
-### Documentation
+## Building blocks
 
-TODO: [docs](https://ificiana.github.io/remagic)
+- Constants: `DIGIT`, `WORD`, `WHITESPACE`, `LETTER`, `CHAR`, `NEWLINE`, ... and
+  anchors `START`, `END`, `WORD_BOUNDARY`, ...
+- Characters: `exactly`, `char_in`, `char_not_in`, `char_range`, `any_of`,
+  `unicode_property`
+- Quantifiers: `optional`, `zero_or_more`, `one_or_more`, `times`, `between`,
+  `at_least`, each with `lazy=` and `possessive=`
+- Groups: `group` (numbered or named), `non_capturing`, `atomic`, `ref`
+- Assertions: `before`, `not_before`, `after`, `not_after`, and the methods
+  `followed_by`, `not_followed_by`, `preceded_by`, `not_preceded_by`
+- Flags: `scoped`, `ignore_case`, `multiline`, `dotall`
+- Every function has a matching `Pattern` method.
 
-### Known bugs
+## Development
 
-- improper behaviour with `any_of`
+```sh
+uv sync
+uv run pytest        # 100% line and branch coverage is required
+uv run ruff check . && uv run ruff format --check . && uv run mypy
+```

@@ -1,0 +1,16 @@
+site_name: remagic
+site_url: https://ificiana.github.io/remagic
+theme:
+  name: material
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+nav:
+  - Home: index.md
+  - API: api.md
+markdown_extensions:
+  - pymdownx.snippets:
+      base_path: [.]
