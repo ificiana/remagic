@@ -1,6 +1,10 @@
-[![build](https://github.com/ificiana/remagic/actions/workflows/build.yml/badge.svg)](https://github.com/ificiana/remagic/actions/workflows/build.yml)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/remagic)
-![PyPI - License](https://img.shields.io/pypi/l/remagic)
+[![PyPI](https://img.shields.io/pypi/v/remagic)](https://pypi.org/project/remagic/)
+[![Python versions](https://img.shields.io/pypi/pyversions/remagic)](https://pypi.org/project/remagic/)
+[![License](https://img.shields.io/pypi/l/remagic)](https://github.com/ificiana/remagic/blob/dev/LICENSE)
+[![build](https://github.com/ificiana/remagic/actions/workflows/build.yml/badge.svg?branch=dev)](https://github.com/ificiana/remagic/actions/workflows/build.yml)
+[![docs](https://github.com/ificiana/remagic/actions/workflows/docs.yml/badge.svg?branch=dev)](https://ificiana.github.io/remagic)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Typed](https://img.shields.io/badge/typing-strict-blue)](https://mypy-lang.org)
 
 <p align="center"><img src="https://raw.githubusercontent.com/ificiana/remagic/dev/assets/logo.svg" alt="remagic logo" width="96"></p>
 
