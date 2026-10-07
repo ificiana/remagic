@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.1
+
+- The README logo uses an absolute URL so it renders on PyPI.
+- The docs workflow deploys from `dev`.
+
 ## 0.2.0
 
 - Breaking: `Pattern` is immutable; strings combined with patterns are literals.
