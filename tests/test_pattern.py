@@ -228,6 +228,8 @@ def test_repr_shows_only_the_source() -> None:
         (rm.exactly("a").times(2), False),
         (rm.exactly("a").between(1, 2), True),
         (rm.exactly("a").one_or_more(), True),
+        (rm.exactly("a").one_or_more().times(0), False),
+        (rm.exactly("a").one_or_more().times(0) + "b", False),
         (rm.DIGIT + rm.WORD_BOUNDARY, False),
         (rm.exactly("a").group(), False),
         (rm.exactly("a").group("x") + rm.ref("x"), True),

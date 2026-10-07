@@ -333,6 +333,8 @@ def width(node: Node) -> tuple[int, int | None]:
             )
         case Repeat(child, low, high):
             child_low, child_high = width(child)
+            if high == 0:
+                return 0, 0
             if high is None:
                 return child_low * low, None if child_high != 0 else 0
             return child_low * low, None if child_high is None else child_high * high
