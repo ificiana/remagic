@@ -44,10 +44,7 @@ dev = [
   "regex>=2026.9.29",
   "ruff>=0.16",
 ]
-docs = [
-  "mkdocs-material>=9.7",
-  "mkdocstrings[python]>=1.0",
-]
+docs = ["pdoc>=16.0"]
 
 [tool.ruff]
 line-length = 88

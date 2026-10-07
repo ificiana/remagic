@@ -56,4 +56,5 @@ automatically and need the `regex` extra.
 uv sync
 uv run pytest        # 100% line and branch coverage is required
 uv run ruff check . && uv run ruff format --check . && uv run mypy
+uv run --group docs pdoc remagic   # browse the API docs, generated from docstrings
 ```
