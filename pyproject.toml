@@ -74,8 +74,9 @@ warn_unreachable = true
 files = ["src", "tests"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests", "src"]
-addopts = ["--strict-markers", "--doctest-modules", "--cov", "--cov-report=term-missing"]
+testpaths = ["tests", "src", "docs", "README.md"]
+addopts = ["--strict-markers", "--doctest-modules",
+  "--doctest-glob=*.md", "--cov", "--cov-report=term-missing"]
 
 [tool.coverage.run]
 source = ["remagic"]

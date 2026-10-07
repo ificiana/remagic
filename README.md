@@ -7,22 +7,23 @@
 Build regular expressions from composable, typed Python objects. Partly inspired
 by `magic-regexp` for Node.
 
-```py
-import remagic as rm
+```pycon
+>>> import remagic as rm
+>>> year = rm.DIGIT.times(4).group("year")
+>>> month = rm.DIGIT.times(2).group("month")
+>>> date = rm.START + year + "-" + month + rm.END
+>>> date.compile().fullmatch("2027-01")["year"]
+'2027'
 
-year = rm.DIGIT.times(4).group("year")
-month = rm.DIGIT.times(2).group("month")
-date = rm.START + year + "-" + month + rm.END
-
-match = date.compile().fullmatch("2027-01")
-assert match and match["year"] == "2027"
 ```
 
 Patterns are immutable. Strings are matched literally, `+` concatenates, `|`
 alternates, and `(?:...)` is added only where precedence needs it:
 
-```py
-str((rm.exactly("a") | "b").times(2))  # (?:a|b){2}
+```pycon
+>>> str((rm.exactly("a") | "b").times(2))
+'(?:a|b){2}'
+
 ```
 
 ## Installation
@@ -35,6 +36,11 @@ uv add "remagic[regex]"   # optional: the `regex` engine
 Requires Python 3.11+. Patterns compile with the standard `re` module. Features
 that only `regex` supports, such as `unicode_property("L")`, switch to it
 automatically and need the `regex` extra.
+
+## Learn more
+
+See the [quickstart](https://ificiana.github.io/remagic/guide/quickstart.html), [concepts](https://ificiana.github.io/remagic/guide/concepts.html) and
+[cookbook](https://ificiana.github.io/remagic/guide/cookbook.html) in the docs, or the building blocks below.
 
 ## Building blocks
 
