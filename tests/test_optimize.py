@@ -202,3 +202,9 @@ def test_possessive_looks_through_what_follows(rest: Pattern, expected: str) -> 
 def test_precedence_property() -> None:
     assert a.precedence is tree.Precedence.ATOM
     assert (a | b).precedence is tree.Precedence.ALTERNATION
+
+
+def test_possessive_rewrite_is_for_the_stdlib_engine_only() -> None:
+    pattern = rm.DIGIT.one_or_more() + "x"
+    assert pattern.compile(engine="re").pattern == r"\d++x"
+    assert pattern.compile(engine="regex").pattern == r"\d+x"

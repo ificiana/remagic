@@ -356,6 +356,7 @@ class Pattern:
                 ) from error
         node = self.node
         if optimize:
-            node = tree.optimize(node, "safe" if optimize is True else optimize, flags)
+            level: Level = "safe" if optimize is True else optimize
+            node = tree.optimize(node, level, flags, possessive=not use_regex)
         compiled: re.Pattern[str] = module.compile(tree.render(node), flags)
         return compiled

@@ -639,11 +639,15 @@ def _possess(node: Node, after: tuple[Atom, ...] | None) -> Node:
             return node
 
 
-def optimize(node: Node, level: Level = "safe", flags: int = 0) -> Node:
+def optimize(
+    node: Node, level: Level = "safe", flags: int = 0, *, possessive: bool = True
+) -> Node:
     """Return a cheaper tree that matches the same way.
 
     `safe` keeps match spans and groups identical to the input. `aggressive`
     only keeps the language, so it is valid for `fullmatch` and yes/no checks.
+    `possessive=False` skips the possessive rewrite, which the `regex` module
+    runs slower than plain greedy repeats.
     """
     aggressive = level == "aggressive"
     sets_known = not (contains(node, (Raw, Scoped)) or flags & _LOOSE)
@@ -652,4 +656,4 @@ def optimize(node: Node, level: Level = "safe", flags: int = 0) -> Node:
         if simpler == node:
             break
         node = simpler
-    return _possess(node, ()) if sets_known else node
+    return _possess(node, ()) if sets_known and possessive else node
