@@ -46,7 +46,7 @@ def class_escape(text: str) -> str:
     return _CLASS_SPECIALS.sub(r"\\\1", text)
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, repr=False)
 class Pattern:
     """An immutable piece of regular expression.
 
@@ -88,6 +88,9 @@ class Pattern:
 
     def _wrap(self, source: str, precedence: Precedence = Precedence.ATOM) -> Pattern:
         return Pattern(source, precedence, self.needs_regex)
+
+    def __repr__(self) -> str:
+        return f"Pattern({self.source!r})"
 
     def __str__(self) -> str:
         return self.source
@@ -146,13 +149,23 @@ class Pattern:
     def times(
         self, count: int, *, lazy: bool = False, possessive: bool = False
     ) -> Pattern:
-        """Repeat exactly `count` times."""
+        """Repeat exactly `count` times.
+
+        Example:
+            >>> str(Pattern.literal("a").times(3))
+            'a{3}'
+        """
         return self.between(count, count, lazy=lazy, possessive=possessive)
 
     def between(
         self, low: int, high: int, *, lazy: bool = False, possessive: bool = False
     ) -> Pattern:
-        """Repeat from `low` to `high` times, inclusive."""
+        """Repeat from `low` to `high` times, inclusive.
+
+        Example:
+            >>> str(Pattern.literal("a").between(2, 4))
+            'a{2,4}'
+        """
         _check_count(low)
         _check_count(high)
         if low > high:
@@ -168,35 +181,70 @@ class Pattern:
     def at_least(
         self, low: int, *, lazy: bool = False, possessive: bool = False
     ) -> Pattern:
-        """Repeat `low` or more times."""
+        """Repeat `low` or more times.
+
+        Example:
+            >>> str(Pattern.literal("a").at_least(2))
+            'a{2,}'
+        """
         _check_count(low)
         suffix = {0: "*", 1: "+"}.get(low, f"{{{low},}}")
         return self._quantify(suffix, lazy, possessive)
 
     def optional(self, *, lazy: bool = False, possessive: bool = False) -> Pattern:
-        """Match zero or one time."""
+        """Match zero or one time.
+
+        Example:
+            >>> str(Pattern.literal("a").optional(lazy=True))
+            'a??'
+        """
         return self.between(0, 1, lazy=lazy, possessive=possessive)
 
     def zero_or_more(self, *, lazy: bool = False, possessive: bool = False) -> Pattern:
-        """Match zero or more times."""
+        """Match zero or more times.
+
+        Example:
+            >>> str(Pattern.literal("ab").zero_or_more())
+            '(?:ab)*'
+        """
         return self.at_least(0, lazy=lazy, possessive=possessive)
 
     def one_or_more(self, *, lazy: bool = False, possessive: bool = False) -> Pattern:
-        """Match one or more times."""
+        """Match one or more times.
+
+        Example:
+            >>> str(Pattern.literal("a").one_or_more(possessive=True))
+            'a++'
+        """
         return self.at_least(1, lazy=lazy, possessive=possessive)
 
     def group(self, name: str | None = None) -> Pattern:
-        """Capture as a numbered group, or as a named group if `name` is given."""
+        """Capture as a numbered group, or as a named group if `name` is given.
+
+        Example:
+            >>> str(Pattern.literal("a").group("first"))
+            '(?P<first>a)'
+        """
         if name is None:
             return self._wrap(f"({self.source})")
         return self._wrap(f"(?P<{_check_name(name)}>{self.source})")
 
     def non_capturing(self) -> Pattern:
-        """Group without capturing."""
+        """Group without capturing.
+
+        Example:
+            >>> str(Pattern.literal("ab").non_capturing())
+            '(?:ab)'
+        """
         return self._wrap(f"(?:{self.source})")
 
     def atomic(self) -> Pattern:
-        """Match without backtracking into the group."""
+        """Match without backtracking into the group.
+
+        Example:
+            >>> str(Pattern.literal("a").atomic())
+            '(?>a)'
+        """
         return self._wrap(f"(?>{self.source})")
 
     def scoped(self, on: str = "", off: str = "") -> Pattern:
@@ -218,7 +266,12 @@ class Pattern:
         return self._wrap(f"(?{on}{minus}:{self.source})")
 
     def ignore_case(self) -> Pattern:
-        """Match case-insensitively."""
+        """Match case-insensitively.
+
+        Example:
+            >>> str(Pattern.literal("a").ignore_case())
+            '(?i:a)'
+        """
         return self.scoped("i")
 
     def multiline(self) -> Pattern:
@@ -246,19 +299,39 @@ class Pattern:
         return self._wrap(f"(?<!{self.source})", Precedence.QUANTIFIED)
 
     def followed_by(self, other: Pattern | str) -> Pattern:
-        """Match this pattern only when `other` follows."""
+        """Match this pattern only when `other` follows.
+
+        Example:
+            >>> str(Pattern.literal("a").followed_by("b"))
+            'a(?=b)'
+        """
         return self + Pattern.coerce(other).lookahead()
 
     def not_followed_by(self, other: Pattern | str) -> Pattern:
-        """Match this pattern only when `other` does not follow."""
+        """Match this pattern only when `other` does not follow.
+
+        Example:
+            >>> str(Pattern.literal("a").not_followed_by("b"))
+            'a(?!b)'
+        """
         return self + Pattern.coerce(other).negative_lookahead()
 
     def preceded_by(self, other: Pattern | str) -> Pattern:
-        """Match this pattern only when `other` precedes."""
+        """Match this pattern only when `other` precedes.
+
+        Example:
+            >>> str(Pattern.literal("a").preceded_by("b"))
+            '(?<=b)a'
+        """
         return Pattern.coerce(other).lookbehind() + self
 
     def not_preceded_by(self, other: Pattern | str) -> Pattern:
-        """Match this pattern only when `other` does not precede."""
+        """Match this pattern only when `other` does not precede.
+
+        Example:
+            >>> str(Pattern.literal("a").not_preceded_by("b"))
+            '(?<!b)a'
+        """
         return Pattern.coerce(other).negative_lookbehind() + self
 
     def compile(self, flags: int = 0, *, engine: Engine = "auto") -> re.Pattern[str]:

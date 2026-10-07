@@ -212,3 +212,8 @@ def test_needs_regex_propagates() -> None:
     assert letter.one_or_more().group().needs_regex
     assert not rm.exactly("a").needs_regex
     assert str(rm.unicode_property("L", negate=True)) == r"\P{L}"
+
+
+def test_repr_shows_only_the_source() -> None:
+    assert repr(rm.DIGIT.times(2)) == "Pattern('\\\\d{2}')"
+    assert repr(Pattern()) == "Pattern('')"
