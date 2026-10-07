@@ -9,6 +9,7 @@ guide/quickstart
 guide/concepts
 guide/cookbook
 guide/optimization
+guide/benchmarks
 ```
 
 ```{toctree}
