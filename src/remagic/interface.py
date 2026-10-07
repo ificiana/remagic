@@ -4,8 +4,9 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 
+from . import _tree as tree
 from .exceptions import RemagicException
-from .pattern import Pattern, Precedence, class_escape
+from .pattern import Pattern
 
 
 def create(value: Pattern | str) -> Pattern:
@@ -111,14 +112,15 @@ def any_of(values: Iterable[Pattern | str]) -> Pattern:
 def _class(
     chars: Iterable[str], ranges: Iterable[tuple[str, str]], negate: bool
 ) -> Pattern:
-    body = "".join(dict.fromkeys(class_escape(char) for char in chars))
+    spans = []
     for low, high in ranges:
         if len(low) != 1 or len(high) != 1 or low > high:
             raise RemagicException(f"invalid range: {low!r}-{high!r}")
-        body += f"{class_escape(low)}-{class_escape(high)}"
-    if not body:
+        spans.append((ord(low), ord(high)))
+    members = list(chars)
+    if not members and not spans:
         raise RemagicException("a character class needs at least one member")
-    return Pattern(f"[{'^' if negate else ''}{body}]", Precedence.ATOM)
+    return Pattern(tree.make_charset(members, spans, negate))
 
 
 def char_in(chars: Iterable[str], *, ranges: Iterable[tuple[str, str]] = ()) -> Pattern:
@@ -142,7 +144,7 @@ def unicode_property(name: str, *, negate: bool = False) -> Pattern:
     r"""Match a Unicode property such as `L` or `Greek`; needs `regex`."""
     if not name or "}" in name:
         raise RemagicException(f"invalid Unicode property: {name!r}")
-    return Pattern(f"\\{'P' if negate else 'p'}{{{name}}}", Precedence.ATOM, True)
+    return Pattern(tree.UProp(name, negate))
 
 
 def before(value: Pattern | str) -> Pattern:
@@ -170,7 +172,7 @@ def ref(reference: int | str) -> Pattern:
     if isinstance(reference, bool):
         raise RemagicException("references are positive integers or group names")
     if isinstance(reference, int) and reference > 0:
-        return Pattern(rf"(?:\{reference})", Precedence.ATOM)
+        return Pattern(tree.Backref(reference))
     if isinstance(reference, str) and reference.isidentifier() and reference.isascii():
-        return Pattern(f"(?P={reference})", Precedence.ATOM)
+        return Pattern(tree.Backref(reference))
     raise RemagicException("references are positive integers or group names")

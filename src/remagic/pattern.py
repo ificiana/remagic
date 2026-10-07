@@ -5,9 +5,10 @@ from __future__ import annotations
 import importlib
 import re
 from dataclasses import dataclass
-from enum import IntEnum
 from typing import Any, Literal
 
+from . import _tree as tree
+from ._tree import Level, Node, Precedence
 from .exceptions import RemagicException
 
 Engine = Literal["auto", "re", "regex"]
@@ -15,16 +16,6 @@ Engine = Literal["auto", "re", "regex"]
 _FLAGS = frozenset("aiLmsux")
 _SCOPED_OFF = frozenset("imsx")
 _ENCODINGS = frozenset("aLu")
-_CLASS_SPECIALS = re.compile(r"([\\\]\[^\-&~|])")
-
-
-class Precedence(IntEnum):
-    """Binding strength of a pattern, used to decide when to add `(?:...)`."""
-
-    ALTERNATION = 0
-    SEQUENCE = 1
-    QUANTIFIED = 2
-    ATOM = 3
 
 
 def _check_count(value: int) -> int:
@@ -41,9 +32,8 @@ def _check_name(name: str) -> str:
     return name
 
 
-def class_escape(text: str) -> str:
-    """Escape characters that are special inside a `[...]` class."""
-    return _CLASS_SPECIALS.sub(r"\\\1", text)
+def _parts(node: Node, kind: type[tree.Seq] | type[tree.Alt]) -> tuple[Node, ...]:
+    return node.parts if isinstance(node, kind) else (node,)
 
 
 @dataclass(frozen=True, slots=True, repr=False)
@@ -57,22 +47,34 @@ class Pattern:
     '(?:a|b){2}'
     """
 
-    source: str = ""
-    precedence: Precedence = Precedence.SEQUENCE
-    needs_regex: bool = False
+    node: Node = tree.EMPTY
+
+    @property
+    def source(self) -> str:
+        """The regex source as built, before any optimisation."""
+        return tree.render(self.node)
+
+    @property
+    def precedence(self) -> Precedence:
+        """How tightly this pattern binds when combined."""
+        return tree.precedence(self.node)
+
+    @property
+    def needs_regex(self) -> bool:
+        """Whether only the `regex` module can compile this pattern."""
+        return tree.needs_regex(self.node)
 
     @classmethod
     def literal(cls, text: str) -> Pattern:
         """Match `text` exactly, escaping every special character."""
         if not isinstance(text, str):
             raise TypeError(f"expected str, got {type(text).__name__}")
-        precedence = Precedence.ATOM if len(text) == 1 else Precedence.SEQUENCE
-        return cls(re.escape(text), precedence)
+        return cls(tree.Lit(text) if text else tree.EMPTY)
 
     @classmethod
     def raw(cls, source: str, *, needs_regex: bool = False) -> Pattern:
         """Wrap an existing regex source, treated as lowest precedence."""
-        return cls(source, Precedence.ALTERNATION, needs_regex)
+        return cls(tree.Raw(source, Precedence.ALTERNATION, needs_regex))
 
     @classmethod
     def coerce(cls, value: Pattern | str) -> Pattern:
@@ -80,14 +82,6 @@ class Pattern:
         if isinstance(value, Pattern):
             return value
         return cls.literal(value)
-
-    def _as(self, minimum: Precedence) -> str:
-        if self.precedence >= minimum:
-            return self.source
-        return f"(?:{self.source})"
-
-    def _wrap(self, source: str, precedence: Precedence = Precedence.ATOM) -> Pattern:
-        return Pattern(source, precedence, self.needs_regex)
 
     def __repr__(self) -> str:
         return f"Pattern({self.source!r})"
@@ -100,14 +94,12 @@ class Pattern:
         if not isinstance(other, Pattern | str):
             return NotImplemented
         right = Pattern.coerce(other)
-        if not self.source:
+        if self.node == tree.EMPTY:
             return right
-        if not right.source:
+        if right.node == tree.EMPTY:
             return self
         return Pattern(
-            self._as(Precedence.SEQUENCE) + right._as(Precedence.SEQUENCE),
-            Precedence.SEQUENCE,
-            self.needs_regex or right.needs_regex,
+            tree.Seq((*_parts(self.node, tree.Seq), *_parts(right.node, tree.Seq)))
         )
 
     def __radd__(self, other: str) -> Pattern:
@@ -121,9 +113,7 @@ class Pattern:
             return NotImplemented
         right = Pattern.coerce(other)
         return Pattern(
-            f"{self.source}|{right.source}",
-            Precedence.ALTERNATION,
-            self.needs_regex or right.needs_regex,
+            tree.Alt((*_parts(self.node, tree.Alt), *_parts(right.node, tree.Alt)))
         )
 
     def __ror__(self, other: str) -> Pattern:
@@ -137,14 +127,13 @@ class Pattern:
             return NotImplemented
         return self.times(count)
 
-    def _quantify(self, suffix: str, lazy: bool, possessive: bool) -> Pattern:
+    def _repeat(
+        self, low: int, high: int | None, lazy: bool, possessive: bool
+    ) -> Pattern:
         if lazy and possessive:
             raise RemagicException("a quantifier cannot be both lazy and possessive")
-        if lazy:
-            suffix += "?"
-        elif possessive:
-            suffix += "+"
-        return self._wrap(self._as(Precedence.ATOM) + suffix, Precedence.QUANTIFIED)
+        mode: tree.Mode = "lazy" if lazy else "possessive" if possessive else "greedy"
+        return Pattern(tree.Repeat(self.node, low, high, mode))
 
     def times(
         self, count: int, *, lazy: bool = False, possessive: bool = False
@@ -170,13 +159,7 @@ class Pattern:
         _check_count(high)
         if low > high:
             raise RemagicException("the upper bound is below the lower bound")
-        if (low, high) == (0, 1):
-            suffix = "?"
-        elif low == high:
-            suffix = f"{{{low}}}"
-        else:
-            suffix = f"{{{low},{high}}}"
-        return self._quantify(suffix, lazy, possessive)
+        return self._repeat(low, high, lazy, possessive)
 
     def at_least(
         self, low: int, *, lazy: bool = False, possessive: bool = False
@@ -188,8 +171,7 @@ class Pattern:
             'a{2,}'
         """
         _check_count(low)
-        suffix = {0: "*", 1: "+"}.get(low, f"{{{low},}}")
-        return self._quantify(suffix, lazy, possessive)
+        return self._repeat(low, None, lazy, possessive)
 
     def optional(self, *, lazy: bool = False, possessive: bool = False) -> Pattern:
         """Match zero or one time.
@@ -226,8 +208,8 @@ class Pattern:
             '(?P<first>a)'
         """
         if name is None:
-            return self._wrap(f"({self.source})")
-        return self._wrap(f"(?P<{_check_name(name)}>{self.source})")
+            return Pattern(tree.Group(self.node))
+        return Pattern(tree.Group(self.node, _check_name(name)))
 
     def non_capturing(self) -> Pattern:
         """Group without capturing.
@@ -236,7 +218,7 @@ class Pattern:
             >>> str(Pattern.literal("ab").non_capturing())
             '(?:ab)'
         """
-        return self._wrap(f"(?:{self.source})")
+        return Pattern(tree.NonCapture(self.node))
 
     def atomic(self) -> Pattern:
         """Match without backtracking into the group.
@@ -245,7 +227,7 @@ class Pattern:
             >>> str(Pattern.literal("a").atomic())
             '(?>a)'
         """
-        return self._wrap(f"(?>{self.source})")
+        return Pattern(tree.Atomic(self.node))
 
     def scoped(self, on: str = "", off: str = "") -> Pattern:
         """Apply inline flags to this pattern only.
@@ -262,8 +244,7 @@ class Pattern:
             raise RemagicException("only i, m, s and x can be turned off")
         if len(set(on) & _ENCODINGS) > 1:
             raise RemagicException("a, L and u are mutually exclusive")
-        minus = f"-{off}" if off else ""
-        return self._wrap(f"(?{on}{minus}:{self.source})")
+        return Pattern(tree.Scoped(self.node, on, off))
 
     def ignore_case(self) -> Pattern:
         """Match case-insensitively.
@@ -284,19 +265,19 @@ class Pattern:
 
     def lookahead(self) -> Pattern:
         """Assert that this pattern follows, without consuming it."""
-        return self._wrap(f"(?={self.source})", Precedence.QUANTIFIED)
+        return Pattern(tree.Look(self.node, behind=False, negate=False))
 
     def negative_lookahead(self) -> Pattern:
         """Assert that this pattern does not follow."""
-        return self._wrap(f"(?!{self.source})", Precedence.QUANTIFIED)
+        return Pattern(tree.Look(self.node, behind=False, negate=True))
 
     def lookbehind(self) -> Pattern:
         """Assert that this pattern precedes."""
-        return self._wrap(f"(?<={self.source})", Precedence.QUANTIFIED)
+        return Pattern(tree.Look(self.node, behind=True, negate=False))
 
     def negative_lookbehind(self) -> Pattern:
         """Assert that this pattern does not precede."""
-        return self._wrap(f"(?<!{self.source})", Precedence.QUANTIFIED)
+        return Pattern(tree.Look(self.node, behind=True, negate=True))
 
     def followed_by(self, other: Pattern | str) -> Pattern:
         """Match this pattern only when `other` follows.
@@ -334,8 +315,33 @@ class Pattern:
         """
         return Pattern.coerce(other).negative_lookbehind() + self
 
-    def compile(self, flags: int = 0, *, engine: Engine = "auto") -> re.Pattern[str]:
+    def optimized(self, level: Level = "safe", flags: int = 0) -> Pattern:
+        """Return the cheaper equivalent pattern that `compile` would use.
+
+        `safe` keeps match spans and groups identical. `aggressive` also
+        factors and reorders alternatives, which can change which match is
+        found, so use it with `fullmatch` or yes/no checks only.
+
+        Example:
+            >>> import remagic as rm
+            >>> str(rm.any_of("abc").one_or_more().one_or_more().optimized())
+            '[abc]++'
+        """
+        return Pattern(tree.optimize(self.node, level, flags))
+
+    def compile(
+        self,
+        flags: int = 0,
+        *,
+        engine: Engine = "auto",
+        optimize: bool | Level = True,
+    ) -> re.Pattern[str]:
         """Compile with `re`, or with `regex` when the pattern needs it.
+
+        `optimize` rewrites the pattern to a cheaper one with the same
+        matches (`True` or `"safe"`), also factors alternatives for
+        `fullmatch` use (`"aggressive"`), or compiles the pattern as built
+        (`False`).
 
         Raises:
             RemagicException: if the chosen engine cannot compile the pattern.
@@ -353,5 +359,8 @@ class Pattern:
                 raise RemagicException(
                     "install remagic[regex] to use the `regex` engine"
                 ) from error
-        compiled: re.Pattern[str] = module.compile(self.source, flags)
+        node = self.node
+        if optimize:
+            node = tree.optimize(node, "safe" if optimize is True else optimize, flags)
+        compiled: re.Pattern[str] = module.compile(tree.render(node), flags)
         return compiled
