@@ -19,11 +19,6 @@ def exactly(text: str) -> Pattern:
     return Pattern.literal(text)
 
 
-def raw(source: str, *, needs_regex: bool = False) -> Pattern:
-    """Use existing regex source as-is."""
-    return Pattern.raw(source, needs_regex=needs_regex)
-
-
 def optional(
     value: Pattern | str, *, lazy: bool = False, possessive: bool = False
 ) -> Pattern:

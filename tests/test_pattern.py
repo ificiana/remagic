@@ -6,7 +6,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 import remagic as rm
-from remagic import Pattern, RemagicException
+from remagic import Pattern, RemagicException, unsafe
 
 TEXT = st.text(min_size=0, max_size=8)
 
@@ -181,7 +181,7 @@ def test_constants() -> None:
 
 
 def test_raw_is_wrapped_like_alternation() -> None:
-    assert str(rm.raw("a|b") + "c") == "(?:a|b)c"
+    assert str(unsafe.raw("a|b") + "c") == "(?:a|b)c"
 
 
 def test_compile_flags() -> None:

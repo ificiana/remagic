@@ -72,11 +72,6 @@ class Pattern:
         return cls(tree.Lit(text) if text else tree.EMPTY)
 
     @classmethod
-    def raw(cls, source: str, *, needs_regex: bool = False) -> Pattern:
-        """Wrap an existing regex source, treated as lowest precedence."""
-        return cls(tree.Raw(source, Precedence.ALTERNATION, needs_regex))
-
-    @classmethod
     def coerce(cls, value: Pattern | str) -> Pattern:
         """Return `value` as a pattern; strings become literals."""
         if isinstance(value, Pattern):

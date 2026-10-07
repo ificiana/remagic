@@ -6,7 +6,7 @@ from hypothesis import given, settings
 from hypothesis import strategies as st
 
 import remagic as rm
-from remagic import Pattern
+from remagic import Pattern, unsafe
 from remagic import _tree as tree
 
 ALPHABET = "abc"
@@ -108,7 +108,7 @@ a, b, c = rm.exactly("a"), rm.exactly("b"), rm.exactly("c")
         (rm.START + a.one_or_more(), "^a++"),
         (a.one_or_more().lookahead(), "(?=a++)"),
         (a.scoped("i"), "(?i:a)"),
-        (a.one_or_more() + rm.raw("x"), "a+(?:x)"),
+        (a.one_or_more() + unsafe.raw("x"), "a+(?:x)"),
     ],
 )
 def test_safe_forms(pattern: Pattern, expected: str) -> None:
@@ -141,7 +141,7 @@ def test_optimisation_is_idempotent_and_skipped_for_raw() -> None:
     pattern = (a | b).one_or_more() + rm.DIGIT
     once = pattern.optimized()
     assert once.optimized() == once
-    assert str(rm.raw("(a+)+").optimized()) == "(a+)+"
+    assert str(unsafe.raw("(a+)+").optimized()) == "(a+)+"
 
 
 def _time(compiled: re.Pattern[str], text: str) -> float:
@@ -181,10 +181,10 @@ d = rm.DIGIT.one_or_more()
         (rm.WS + "y", r"\d++\sy"),
         (rm.WS.optional() + "y", r"\d++\s?+y"),
         (rm.WS.optional() + rm.NOT_WS, r"\d+\s?+\S"),
-        (rm.raw("q") + "y", r"\d+(?:q)y"),
+        (unsafe.raw("q") + "y", r"\d+(?:q)y"),
         (rm.WS | "xy", r"\d++(?:\s|xy)"),
         (rm.WS.optional() | "xy", r"\d++(?:\s?+|xy)"),
-        (rm.raw("q") | "xy", r"\d+(?:q|xy)"),
+        (unsafe.raw("q") | "xy", r"\d+(?:q|xy)"),
         (rm.WS.zero_or_more().group() + "y", r"\d++(\s*+)y"),
         (rm.before("y"), r"\d+(?=y)"),
         ((rm.WS + "y").group(), r"\d++(\sy)"),

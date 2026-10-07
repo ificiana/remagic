@@ -28,3 +28,10 @@
 ```{eval-rst}
 .. autoexception:: remagic.RemagicException
 ```
+
+## Escape hatch
+
+```{eval-rst}
+.. automodule:: remagic.unsafe
+   :members:
+```

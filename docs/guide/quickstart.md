@@ -26,7 +26,7 @@ Pattern('(?P<year>\\d{4})\\-(?P<month>\\d{2})')
 ## Three rules
 
 1. **Strings are literals.** `"a.b"` matches the text `a.b`, not "a, any
-   character, b". Use {func}`remagic.interface.raw` to pass regex source through.
+   character, b". Everything you need is built from these pieces; {mod}`remagic.unsafe` exists only as a last resort.
 2. **`+` joins, `|` chooses.** Brackets appear only when needed.
 3. **Patterns never change.** Every method returns a new pattern, so a pattern
    can be shared and reused safely.

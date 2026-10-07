@@ -106,3 +106,24 @@ Force an engine with `compile(engine="re")` or `compile(engine="regex")`.
 Invalid input raises {class}`~remagic.RemagicException`, a `ValueError`, with a
 message naming the problem. Passing the wrong type (for example a number where
 text is expected) raises `TypeError`.
+
+## No jargon needed
+
+Lookarounds, atomic groups and possessive quantifiers have plain names here,
+or need no name at all.
+
+```pycon
+>>> price = rm.DIGIT.one_or_more().preceded_by("$")
+>>> str(price)
+'(?<=\\$)\\d+'
+>>> price.compile().search("cost: $42").group()
+'42'
+>>> str(rm.exactly("px").not_preceded_by(rm.DIGIT))
+'(?<!\\d)px'
+
+```
+
+- `followed_by`, `not_followed_by`, `preceded_by` and `not_preceded_by` say
+  what must (not) be next to a match without consuming it.
+- You never need `atomic` or `possessive=True` for speed: `compile()` adds them
+  wherever they cannot change the result.

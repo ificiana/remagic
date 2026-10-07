@@ -33,7 +33,7 @@ catastrophic backtracking such as `(?:a+)+c` against `aaaa…b`.
 
 ```
 
-Capturing groups are kept, so group numbers never shift. `raw()` patterns and
+Capturing groups are kept, so group numbers never shift. `unsafe.raw()` patterns and
 scoped flags are opaque, and flags such as `re.IGNORECASE` also disable the
 rewrites that depend on knowing exactly which characters match.
 
