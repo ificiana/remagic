@@ -1,49 +1,33 @@
 # How to contribute
 
-## Dependencies
+## Setup
 
-We use `poetry` to manage the [dependencies](https://github.com/python-poetry/poetry).
-If you don't have `poetry`, you should install with `make poetry-download`.
-
-To install dependencies and prepare [`pre-commit`](https://pre-commit.com/) hooks you would need to
-run `install` command:
+Dependencies are managed with [`uv`](https://docs.astral.sh/uv/):
 
 ```bash
-make install
-make pre-commit-install
+uv sync
+uv run pre-commit install
 ```
 
-To activate your `virtualenv` run `poetry shell`.
-
-## Codestyle
-
-After installation, you may execute code formatting.
+## Checks
 
 ```bash
-make codestyle
+uv run ruff format .
+uv run ruff check .
+uv run mypy
+uv run pytest
 ```
 
-### Checks
+`pytest` fails below 100% line and branch coverage.
 
-Many checks are configured for this project. Command `make check-codestyle` will check black, isort
-and darglint.
-The `make check-safety` command will look at the security of your code.
+## Before submitting
 
-Command `make lint` applies all checks.
-
-### Before submitting
-
-Before submitting your code please do the following steps:
-
-1. Add any changes you want
-2. Add tests for the new changes
-3. Edit documentation if you have changed something significant
-4. Run `make codestyle` to format your changes.
-5. Run `make lint` to ensure that types, security and docstrings are okay.
+1. Write a failing test first, then the change.
+2. Update the README or docs if behaviour changes.
+3. Run the checks above.
+4. Use [Conventional Commits](https://www.conventionalcommits.org/) messages (`feat:`, `fix:`, `docs:`, ...).
 
 ## Other help
 
-You can contribute by spreading a word about this library.
-It would also be a huge contribution to write
-a short article on how you are using this project.
-You can also share your best practices with us.
+You can also contribute by spreading the word about this library or writing a
+short article on how you use it.
