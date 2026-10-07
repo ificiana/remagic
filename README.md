@@ -2,7 +2,7 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/remagic)
 ![PyPI - License](https://img.shields.io/pypi/l/remagic)
 
-<p align="center"><img src="assets/logo.svg" alt="remagic logo" width="96"></p>
+<p align="center"><img src="https://raw.githubusercontent.com/ificiana/remagic/dev/assets/logo.svg" alt="remagic logo" width="96"></p>
 
 # remagic
 
