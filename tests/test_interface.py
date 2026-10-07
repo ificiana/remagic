@@ -122,3 +122,13 @@ def test_any_of_keeps_regex_requirement_of_source_identical_duplicates() -> None
     plain, needing = rm.exactly("a"), unsafe.raw("a", needs_regex=True)
     assert rm.any_of([plain, needing]).needs_regex
     assert rm.any_of([needing, plain]).needs_regex
+
+
+def test_interface_builders_combine_with_patterns_on_either_side() -> None:
+    both = rm.WS + rm.optional(rm.WS)
+    assert str(both) == r"\s\s?"
+    assert str(rm.optional(rm.WS) + rm.WS) == r"\s?\s"
+    assert str(rm.optional(rm.CHAR + rm.DIGIT)) == r"(?:.\d)?"
+    assert full(both, " ")
+    assert full(both, "  ")
+    assert not full(both, "   ")
