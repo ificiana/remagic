@@ -4,6 +4,7 @@
 
 - Breaking: `Pattern` is immutable; strings combined with patterns are literals.
 - Breaking: Python 3.11+ only; `regex` is an optional extra.
+- `compile()` optimizes patterns (`optimize=True`, `"aggressive"` or `False`); `Pattern.optimized()` shows the result.
 - Added `|`, `times`, `between`, `at_least`, lazy and possessive quantifiers,
   `atomic`, named groups, scoped flags, anchors and lookaround methods.
 - Fixed `not_before` and `not_after`, the `NOT_NEWLINE` pattern, quantifying
