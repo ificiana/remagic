@@ -60,7 +60,9 @@ See the [quickstart](https://ificiana.github.io/remagic/guide/quickstart.html), 
 - Assertions: `before`, `not_before`, `after`, `not_after`, and the methods
   `followed_by`, `not_followed_by`, `preceded_by`, `not_preceded_by`
 - Flags: `scoped`, `ignore_case`, `multiline`, `dotall`
-- Every function has a matching `Pattern` method.
+- Quantifiers, groups and flags are both functions and `Pattern` methods.
+  `exactly`, `char_in`, `char_not_in`, `char_range`, `any_of`,
+  `unicode_property` and `ref` start a pattern, so they are functions only.
 
 ## Development
 
