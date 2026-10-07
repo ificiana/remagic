@@ -16,7 +16,7 @@ htmlcov/
 .ruff_cache/
 
 # Docs
-site/
+docs/_build/
 
 # Editors and OS
 .idea/
