@@ -77,7 +77,11 @@ a, b, c = rm.exactly("a"), rm.exactly("b"), rm.exactly("c")
         (a | b | c, "[abc]"),
         (rm.any_of("abd"), "[abd]"),
         (a.one_or_more().non_capturing().one_or_more(), "a++"),
-        (a.times(2).non_capturing().times(3), "a{6}"),
+        (a.times(2).non_capturing().times(3), "aaaaaa"),
+        (rm.exactly("ab").times(3), "ababab"),
+        (rm.DIGIT.times(2).non_capturing().times(3), r"\d{6}"),
+        (a.times(65), "a{65}"),
+        (a.times(3).group(), "(aaa)"),
         (a.one_or_more() + a.one_or_more(), "a{2,}+"),
         (a + a + a, "aaa"),
         (a.zero_or_more() + a, "a++"),
@@ -122,6 +126,8 @@ def test_safe_forms(pattern: Pattern, expected: str) -> None:
         (rm.exactly("foo") | "foobar", "foo(?:|bar)"),
         (rm.exactly("ab") | "c" | "ad", "a[bd]|c"),
         (rm.exactly("ab") | rm.DIGIT | "ac", "a[bc]|\\d"),
+        (a.between(2, 3).non_capturing().times(2), "a{4,6}+"),
+        (a.between(2, 3).non_capturing().between(1, 3), "a{2,9}+"),
     ],
 )
 def test_aggressive_forms(pattern: Pattern, expected: str) -> None:

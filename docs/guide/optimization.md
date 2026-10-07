@@ -27,7 +27,7 @@ catastrophic backtracking such as `(?:a+)+c` against `aaaa…b`.
 >>> str((rm.exactly("a") | "b" | "c").optimized())
 '[abc]'
 >>> str(rm.exactly("a").times(2).non_capturing().times(3).optimized())
-'a{6}'
+'aaaaaa'
 >>> str((rm.DIGIT.one_or_more() + "x").optimized())
 '\\d++x'
 

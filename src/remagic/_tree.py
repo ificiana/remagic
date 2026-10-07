@@ -340,6 +340,20 @@ def _unit(node: Node) -> tuple[Node, int, int | None] | None:
     return None
 
 
+_UNROLL_LIMIT = 64
+
+
+def _unrolled(repeat: Repeat) -> Node:
+    child = repeat.child
+    if (
+        isinstance(child, Lit)
+        and repeat.low == repeat.high
+        and repeat.low * len(child.text) <= _UNROLL_LIMIT
+    ):
+        return Lit(child.text * repeat.low)
+    return repeat
+
+
 def _merge(left: Node, right: Node) -> Node | None:
     if isinstance(left, Lit) and isinstance(right, Lit):
         return Lit(left.text + right.text)
@@ -347,7 +361,7 @@ def _merge(left: Node, right: Node) -> Node | None:
     if first is None or second is None or first[0] != second[0]:
         return None
     high = None if first[2] is None or second[2] is None else first[2] + second[2]
-    return Repeat(first[0], first[1] + second[1], high)
+    return _unrolled(Repeat(first[0], first[1] + second[1], high))
 
 
 def _seq(parts: Iterable[Node]) -> Node:
@@ -481,12 +495,12 @@ def _repeat(
     if isinstance(child, Repeat) and not captures:
         if child.low == child.high and low == high and high is not None:
             product = child.low * high
-            return Repeat(child.child, product, product)
+            return _unrolled(Repeat(child.child, product, product))
         if mode == child.mode == "greedy" and _single(child.child):
             fold = _folded(child, low, high, aggressive)
             if fold is not None:
                 return Repeat(child.child, *fold)
-    return Repeat(child, low, high, mode)
+    return _unrolled(Repeat(child, low, high, mode))
 
 
 def _atomic(child: Node) -> Node:
