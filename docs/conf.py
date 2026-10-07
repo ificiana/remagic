@@ -27,10 +27,8 @@ napoleon_google_docstring = True
 nitpicky = True
 intersphinx_mapping = {"python": ("https://docs.python.org/3", None)}
 
-html_theme = "furo"
+html_theme = "shibuya"
 html_title = f"remagic {release}"
 html_theme_options = {
-    "source_repository": "https://github.com/ificiana/remagic",
-    "source_branch": "main",
-    "source_directory": "docs/",
+    "github_url": "https://github.com/ificiana/remagic",
 }
