@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "remagic"
-version = "0.2.0"
+version = "0.2.0b1"
 description = "Build regular expressions from composable, typed Python objects."
 readme = "README.md"
 license = "MIT"
