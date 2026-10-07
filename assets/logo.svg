@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="remagic">
+  <rect width="64" height="64" rx="14" fill="#6d28d9"/>
+  <g fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M19 10C9 24 9 38 19 52"/>
+    <path d="M19 10H30C42 10 42 28 30 28"/>
+    <path d="M30 28L37 38"/>
+  </g>
+  <g fill="#fff">
+    <circle cx="40" cy="48.5" r="3.2"/>
+    <circle cx="55" cy="26" r="3.2"/>
+    <circle cx="55" cy="48.5" r="3.2"/>
+  </g>
+</svg>
