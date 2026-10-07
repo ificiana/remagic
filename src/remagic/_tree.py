@@ -442,10 +442,25 @@ def _factor_runs(parts: list[Node], reorder: bool) -> list[Node]:
     return out[:-1]
 
 
+def _repeats_earlier(piece: Node, earlier: list[Node]) -> bool:
+    """Whether `piece` is `x?` and an earlier alternative is already `x`.
+
+    `x|x?` tries `x` twice before the empty match, so the second try is dead.
+    """
+    return (
+        isinstance(piece, Repeat)
+        and (piece.low, piece.high, piece.mode) == (0, 1, "greedy")
+        and piece.child in earlier
+        and not contains(piece.child, (Group,))
+    )
+
+
 def _alt(parts: Iterable[Node], aggressive: bool, ordered_ok: bool) -> Node:
     flat: list[Node] = []
     for part in parts:
         for piece in part.parts if isinstance(part, Alt) else (part,):
+            if _repeats_earlier(piece, flat):
+                piece = EMPTY
             if not (piece in flat and not contains(piece, (Group,))):
                 flat.append(piece)
     if aggressive:
@@ -457,6 +472,8 @@ def _alt(parts: Iterable[Node], aggressive: bool, ordered_ok: bool) -> Node:
     flat = _factor_runs(_merge_chars(flat), aggressive or ordered_ok)
     if len(flat) == 1:
         return flat[0]
+    if len(flat) == 2 and flat[1] == EMPTY:
+        return Repeat(flat[0], 0, 1)
     return Alt(tuple(flat))
 
 

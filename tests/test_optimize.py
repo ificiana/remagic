@@ -214,3 +214,25 @@ def test_possessive_rewrite_is_for_the_stdlib_engine_only() -> None:
     pattern = rm.DIGIT.one_or_more() + "x"
     assert pattern.compile(engine="re").pattern == r"\d++x"
     assert pattern.compile(engine="regex").pattern == r"\d+x"
+
+
+@pytest.mark.parametrize(
+    ("pattern", "expected"),
+    [
+        (a | a.optional(), "a?+"),
+        (rm.exactly("a") | "", "a?+"),
+        (rm.exactly("ab") | "", "(?:ab)?"),
+        ((a | "b" | a.optional()), "[ab]?+"),
+        ((a | a.optional(lazy=True)), "a|a??"),
+        ((a.group() | a.group().optional()), "(a)|(a)?"),
+    ],
+)
+def test_overlapping_optional_alternative_collapses(
+    pattern: Pattern, expected: str
+) -> None:
+    assert str(pattern.optimized()) == expected
+
+
+def test_overlapping_alternative_in_a_loop_does_not_backtrack_exponentially() -> None:
+    pattern = (a | a.optional()).non_capturing().one_or_more() + "c"
+    assert _time(pattern.compile(), "a" * 5000 + "!") < 0.5
