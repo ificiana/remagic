@@ -1,206 +1,219 @@
-# flake8: noqa
+import re
+import sys
 
 import pytest
+from hypothesis import given
+from hypothesis import strategies as st
 
-from remagic import *
-from remagic.exceptions import RemagicException
+import remagic as rm
+from remagic import Pattern, RemagicException, unsafe
 
-
-@pytest.mark.parametrize(
-    "input_pattern1, input_pattern2, expected_output",
-    [
-        ("test", "test", "testtest"),
-        (".", ".", ".."),
-        (CHAR, ".", ".."),
-        (CHAR, WS, r".\s"),
-        ("test", CHAR, "test."),
-    ],
-)
-def test_pattern_addition(input_pattern1, input_pattern2, expected_output):
-    """
-    :param input_pattern1: 1st pattern.
-    :param input_pattern2: 2nd pattern.
-    :param expected_output: The expected transformation.
-    """
-    output = create(input_pattern1) + create(input_pattern2)
-    assert output == expected_output, f"{output} != {expected_output}"
+TEXT = st.text(min_size=0, max_size=8)
 
 
-@pytest.mark.parametrize(
-    "input_pattern, expected_output",
-    [
-        ("test", "test"),
-        (".", "."),
-        (CHAR, "."),
-        (WS, r"\s"),
-    ],
-)
-def test_pattern(input_pattern, expected_output):
-    """
-    :param input_pattern: Pattern.
-    :param expected_output: The expected transformation.
-    """
-    output = create("")
-    ex1 = create(input_pattern).pattern
-    output.pattern = create(input_pattern).pattern
-    ex2 = output.pattern
-
-    assert (ex1, ex2) == (
-        expected_output,
-        expected_output,
-    ), f"{output} != {expected_output}"
+def full(pattern: Pattern, text: str) -> bool:
+    return pattern.compile().fullmatch(text) is not None
 
 
-@pytest.mark.parametrize(
-    "const, expected_output",
-    [
-        (CHAR, "."),
-        (WS, r"\s"),
-        (N, r"\n"),
-    ],
-)
-def test_create_constants(const, expected_output):
-    """
-    :param const: Constant
-    :param expected_output: The expected transformation.
-    """
-    output = const._pattern
-    assert output == expected_output, f"{output} != {expected_output}"
+@given(TEXT)
+def test_literal_matches_itself(text: str) -> None:
+    assert full(rm.exactly(text), text)
 
 
-@pytest.mark.parametrize(
-    "input_str, expected_output",
-    [
-        ("test", "test"),
-        (".", "."),
-        (r"a sentence\.", r"a sentence\."),
-        (CHAR, "."),
-    ],
-)
-def test_create_pattern(input_str, expected_output):
-    """
-    :param input_str: String to transform.
-    :param expected_output: The expected transformation.
-    """
-    output = create(input_str)._pattern
-    assert output == expected_output, f"{output} != {expected_output}"
+def test_literal_rejects_non_str() -> None:
+    with pytest.raises(TypeError):
+        Pattern.literal(1)  # type: ignore[arg-type]
+
+
+@given(TEXT, TEXT)
+def test_concat_and_alternation_precedence(a: str, b: str) -> None:
+    pattern = (rm.exactly(a) | b) + "z"
+    assert full(pattern, a + "z")
+    assert full(pattern, b + "z")
+
+
+def test_alternation_is_wrapped_when_quantified() -> None:
+    assert str((rm.exactly("a") | "b").times(2)) == "(?:a|b){2}"
+
+
+def test_multichar_literal_wrapped_when_quantified() -> None:
+    assert full(rm.exactly("ab").times(2), "abab")
+    assert not full(rm.exactly("ab").times(2), "abb")
+
+
+def test_quantified_not_made_possessive_by_requantifying() -> None:
+    pattern = rm.exactly("a").one_or_more().one_or_more()
+    assert str(pattern) == "(?:a+)+"
+
+
+def test_empty_pattern_is_identity() -> None:
+    a = rm.exactly("a")
+    assert Pattern() + a == a
+    assert a + Pattern() == a
+    assert "" + a == a
+
+
+def test_radd_ror_and_unsupported_operands() -> None:
+    a = rm.exactly("a")
+    assert full("x" + a, "xa")
+    assert full("x" | a, "x")
+    with pytest.raises(TypeError):
+        a + 1  # type: ignore[operator]
+    with pytest.raises(TypeError):
+        a | 1  # type: ignore[operator]
+    with pytest.raises(TypeError):
+        1 + a  # type: ignore[operator]
+    with pytest.raises(TypeError):
+        1 | a  # type: ignore[operator]
+    with pytest.raises(TypeError):
+        a * "x"  # type: ignore[operator]
+
+
+def test_mul_and_str() -> None:
+    assert str(rm.exactly("a") * 3) == "a{3}"
 
 
 @pytest.mark.parametrize(
-    "input_str1, input_str2, expected_output",
+    ("build", "source"),
     [
-        ("test", "test", "testtest"),
-        (".", ".", ".."),
-        (CHAR, ".", r".."),
-        (".", str(CHAR), r".."),
-        (CHAR, N, r".\n"),
+        (lambda p: p.optional(), "a?"),
+        (lambda p: p.zero_or_more(), "a*"),
+        (lambda p: p.one_or_more(), "a+"),
+        (lambda p: p.at_least(3), "a{3,}"),
+        (lambda p: p.between(2, 4), "a{2,4}"),
+        (lambda p: p.times(0), "a{0}"),
+        (lambda p: p.zero_or_more(lazy=True), "a*?"),
+        (lambda p: p.one_or_more(possessive=True), "a++"),
     ],
 )
-def test_add_patterns_within_create(input_str1, input_str2, expected_output):
-    """
-    :param input_str1: 1st String to transform.
-    :param input_str2: 2nd String to transform.
-    :param expected_output: The expected transformation.
-    """
-    output = create(input_str1 + input_str2)._pattern
-    assert output == expected_output, f"{output} != {expected_output}"
+def test_quantifier_sources(build, source: str) -> None:  # type: ignore[no-untyped-def]
+    assert str(build(rm.exactly("a"))) == source
 
 
-@pytest.mark.parametrize(
-    "input_str, num, expected_output",
-    [
-        ("test", 2, "testtest"),
-        (CHAR, 2, ".{2}"),
-    ],
-)
-def test_multiply_patterns_within_create(input_str, num, expected_output):
-    """
-    :param input_str: 1st String to transform.
-    :param num: multiplier
-    :param expected_output: The expected transformation.
-    """
-    output = create(input_str * num)._pattern
-    assert output == expected_output, f"{output} != {expected_output}"
+def test_quantifier_errors() -> None:
+    a = rm.exactly("a")
+    with pytest.raises(RemagicException):
+        a.zero_or_more(lazy=True, possessive=True)
+    with pytest.raises(RemagicException):
+        a.times(-1)
+    with pytest.raises(RemagicException):
+        a.between(3, 2)
+    with pytest.raises(TypeError):
+        a.times(True)
+    with pytest.raises(TypeError):
+        a.times("2")  # type: ignore[arg-type]
 
 
-@pytest.mark.parametrize(
-    "input_str, num, expected_output",
-    [
-        ("test", 2, "testtest"),
-        (CHAR, 2, ".{2}"),
-        (WS, (2, 5), r"\s{2,5}"),
-        (DIGIT, (0,), r"\d*"),
-        (DIGIT, (1,), r"\d+"),
-        (DIGIT, (0, 1), r"\d?"),
-    ],
-)
-def test_repeat(input_str, num, expected_output):
-    """
-    :param input_str: 1st String to transform.
-    :param num: multiplier
-    :param expected_output: The expected transformation.
-    """
-    output = create(input_str * num)._pattern
-    assert output == expected_output, f"{output} != {expected_output}"
+@given(TEXT.filter(bool), st.integers(0, 4))
+def test_times_matches_repetition(text: str, count: int) -> None:
+    assert full(rm.exactly(text).times(count), text * count)
 
 
-@pytest.mark.parametrize(
-    "input_str, num, expected_output",
-    [
-        ("test", 2, "test{2}"),
-        (CHAR, 2, ".{2}"),
-        (WS, (2, 5), r"\s{2,5}"),
-        (DIGIT, (0,), r"\d*"),
-        (DIGIT, (1,), r"\d+"),
-        (DIGIT, (0, 1), r"\d?"),
-        (DIGIT, (5,), r"\d{5,}"),
-        (DIGIT, (5, 5), r"\d{5}"),
-    ],
-)
-def test_repeat2(input_str, num, expected_output):
-    """
-    :param input_str: 1st String to transform.
-    :param num: multiplier
-    :param expected_output: The expected transformation.
-    """
-    output = create(input_str).repeat(num)._pattern
-    assert output == expected_output, f"{output} != {expected_output}"
+def test_groups() -> None:
+    a = rm.exactly("a")
+    assert str(a.group()) == "(a)"
+    assert str(a.group("x")) == "(?P<x>a)"
+    assert str(a.non_capturing()) == "(?:a)"
+    assert str(a.atomic()) == "(?>a)"
+    assert a.group("x").compile().fullmatch("a").group("x") == "a"  # type: ignore[union-attr]
+    with pytest.raises(RemagicException):
+        a.group("1bad")
+    with pytest.raises(RemagicException):
+        a.group("é")
+    with pytest.raises(RemagicException):
+        a.group(3)  # type: ignore[arg-type]
 
 
-@pytest.mark.parametrize(
-    "input_str, num, expected_output",
-    [
-        ("test", -2, pytest.raises(RemagicException)),
-        ("test", (9, 2), pytest.raises(RemagicException)),
-        ("test", (-2, 8), pytest.raises(RemagicException)),
-        ("test", (2, 8, 5), pytest.raises(RemagicException)),
-    ],
-)
-def test_repeat_error(input_str, num, expected_output):
-    """
-    :param input_str: 1st String to transform.
-    :param num: multiplier
-    :param expected_output: The expected transformation.
-    """
-    with expected_output:
-        output = create(input_str).repeat(num)._pattern
-        assert output == expected_output, f"{output} != {expected_output}"
+def test_scoped_flags() -> None:
+    a = rm.exactly("a")
+    assert full(a.ignore_case(), "A")
+    assert str(a.scoped("i", "s")) == "(?i-s:a)"
+    assert str(a.scoped(off="i")) == "(?-i:a)"
+    assert full(rm.NEWLINE.dotall(), "\n")
+    assert rm.START.multiline().compile().search("x\ny")
+    for kwargs in (
+        {},
+        {"on": "q"},
+        {"on": "i", "off": "i"},
+        {"off": "a"},
+        {"on": "au"},
+    ):
+        with pytest.raises(RemagicException):
+            a.scoped(**kwargs)
 
 
-@pytest.mark.parametrize(
-    "func, greedy, expected_output",
-    [
-        (zero_or_more, True, r"\d*"),
-        (one_or_more, True, r"\d+"),
-        (zero_or_more, False, r"\d*?"),
-        (one_or_more, False, r"\d+?"),
-    ],
-)
-def test_greedy_quantifier(func, greedy, expected_output):
-    """
-    :param func: function
-    :param greedy: bool, True if greedy
-    :param expected_output: The expected transformation.
-    """
-    output = func(DIGIT, greedy=greedy)._pattern
-    assert output == expected_output, f"{output} != {expected_output}"
+def test_lookarounds() -> None:
+    a = rm.exactly("a")
+    b = rm.exactly("b")
+    assert a.followed_by(b).compile().search("ab")
+    assert not a.followed_by(b).compile().search("ac")
+    assert a.not_followed_by(b).compile().search("ac")
+    assert not a.not_followed_by(b).compile().fullmatch("ab")
+    assert str(a.preceded_by("b")) == "(?<=b)a"
+    assert str(a.not_preceded_by("b")) == "(?<!b)a"
+    assert a.preceded_by(b).compile().search("ba")
+    assert a.not_preceded_by(b).compile().search("ca")
+    assert str(rm.before("b")) == "(?=b)"
+    assert str(rm.not_before("b")) == "(?!b)"
+    assert str(rm.after("b")) == "(?<=b)"
+    assert str(rm.not_after("b")) == "(?<!b)"
+
+
+def test_assertions_can_be_quantified() -> None:
+    assert rm.START.zero_or_more().compile().match("x")
+    assert str(rm.WORD_BOUNDARY.optional()) == r"(?:\b)?"
+
+
+def test_anchors() -> None:
+    word = rm.START_OF_STRING + rm.WORD.one_or_more() + rm.END_OF_STRING
+    assert word.compile().match("abc")
+    assert (rm.WORD_BOUNDARY + "a").compile().search("a")
+    assert not (rm.NOT_WORD_BOUNDARY + "a").compile().search("a")
+    assert (rm.START + "a" + rm.END).compile().match("a")
+
+
+def test_constants() -> None:
+    assert full(rm.NOT_NEWLINE, "x")
+    assert not full(rm.NOT_NEWLINE, "\n")
+    assert full(rm.DIGIT.one_or_more(), "123")
+    assert full(rm.LETTER, "q")
+    assert full(rm.TAB + rm.CARRIAGE_RETURN, "\t\r")
+
+
+def test_raw_is_wrapped_like_alternation() -> None:
+    assert str(unsafe.raw("a|b") + "c") == "(?:a|b)c"
+
+
+def test_compile_flags() -> None:
+    assert rm.exactly("a").compile(re.IGNORECASE).fullmatch("A")
+
+
+def test_engine_selection() -> None:
+    letter = rm.unicode_property("L")
+    assert letter.compile().fullmatch("é")
+    assert rm.exactly("a").compile(engine="regex").fullmatch("a")
+    with pytest.raises(RemagicException):
+        letter.compile(engine="re")
+    with pytest.raises(RemagicException):
+        rm.exactly("a").compile(engine="nope")  # type: ignore[arg-type]
+
+
+def test_missing_regex_engine(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setitem(sys.modules, "regex", None)
+    with pytest.raises(RemagicException, match=r"remagic\[regex\]"):
+        rm.unicode_property("L").compile()
+
+
+def test_needs_regex_propagates() -> None:
+    letter = rm.unicode_property("L")
+    assert (letter + "a").needs_regex
+    assert ("a" + letter).needs_regex
+    assert (letter | "a").needs_regex
+    assert letter.one_or_more().group().needs_regex
+    assert not rm.exactly("a").needs_regex
+    assert str(rm.unicode_property("L", negate=True)) == r"\P{L}"
+
+
+def test_repr_shows_only_the_source() -> None:
+    assert repr(rm.DIGIT.times(2)) == "Pattern('\\\\d{2}')"
+    assert repr(Pattern()) == "Pattern('')"
