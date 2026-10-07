@@ -236,3 +236,9 @@ def test_overlapping_optional_alternative_collapses(
 def test_overlapping_alternative_in_a_loop_does_not_backtrack_exponentially() -> None:
     pattern = (a | a.optional()).non_capturing().one_or_more() + "c"
     assert _time(pattern.compile(), "a" * 5000 + "!") < 0.5
+
+
+def test_raw_captures_survive_optimisation() -> None:
+    raw = unsafe.raw("(a)")
+    for pattern in (raw | raw, raw.times(0), raw | raw.optional()):
+        assert pattern.compile().groups == pattern.compile(optimize=False).groups

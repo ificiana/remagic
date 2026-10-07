@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Fixed the optimizer dropping capture groups of `unsafe.raw` patterns.
+- `ref()` rejects numbers of 100 or more, which Python reads as octal escapes; name the group instead.
+- Variable-width lookbehinds select the `regex` engine.
+- `scoped("L")` is rejected, since `re` accepts that flag only for bytes.
+- `compile()` raises `RemagicException` when the engine cannot compile the pattern.
+- `any_of` keeps the `regex` requirement of source-identical duplicates.
+- Release and docs workflows pin actions to commit SHAs and serialize deployments.
+
 ## 0.2.1
 
 - The README logo uses an absolute URL so it renders on PyPI.

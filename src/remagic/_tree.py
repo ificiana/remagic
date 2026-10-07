@@ -303,10 +303,54 @@ def contains(node: Node, kinds: tuple[type, ...]) -> bool:
     return isinstance(node, kinds) or any(contains(c, kinds) for c in children(node))
 
 
+def may_capture(node: Node) -> bool:
+    """Whether `node` holds a capturing group, or raw source that might."""
+    return contains(node, (Group, Raw))
+
+
+def width(node: Node) -> tuple[int, int | None]:
+    """The fewest and most characters `node` can match; `None` means unbounded."""
+    match node:
+        case Lit(text):
+            return len(text), len(text)
+        case CharSet() | Esc() | UProp():
+            return 1, 1
+        case Backref():
+            return 0, None
+        case Seq(parts):
+            widths = [width(part) for part in parts]
+            high = (
+                None
+                if any(h is None for _, h in widths)
+                else sum(h or 0 for _, h in widths)
+            )
+            return sum(low for low, _ in widths), high
+        case Alt(parts):
+            widths = [width(part) for part in parts]
+            highs = [h for _, h in widths]
+            return min(low for low, _ in widths), (
+                None if None in highs else max(h or 0 for h in highs)
+            )
+        case Repeat(child, low, high):
+            child_low, child_high = width(child)
+            if high is None:
+                return child_low * low, None if child_high != 0 else 0
+            return child_low * low, None if child_high is None else child_high * high
+        case (
+            Group(child=child) | NonCapture(child) | Atomic(child) | Scoped(child=child)
+        ):
+            return width(child)
+    return 0, 0
+
+
 def needs_regex(node: Node) -> bool:
     """Whether only the `regex` module can compile `node`."""
     if isinstance(node, UProp) or (isinstance(node, Raw) and node.needs_regex):
         return True
+    if isinstance(node, Look) and node.behind:
+        low, high = width(node.child)
+        if low != high:
+            return True
     return any(needs_regex(child) for child in children(node))
 
 
@@ -451,7 +495,7 @@ def _repeats_earlier(piece: Node, earlier: list[Node]) -> bool:
         isinstance(piece, Repeat)
         and (piece.low, piece.high, piece.mode) == (0, 1, "greedy")
         and piece.child in earlier
-        and not contains(piece.child, (Group,))
+        and not may_capture(piece.child)
     )
 
 
@@ -461,7 +505,7 @@ def _alt(parts: Iterable[Node], aggressive: bool, ordered_ok: bool) -> Node:
         for piece in part.parts if isinstance(part, Alt) else (part,):
             if _repeats_earlier(piece, flat):
                 piece = EMPTY
-            if not (piece in flat and not contains(piece, (Group,))):
+            if not (piece in flat and not may_capture(piece)):
                 flat.append(piece)
     if aggressive:
         lits = [p for p in flat if isinstance(p, Lit)]
@@ -502,7 +546,7 @@ def _folded(
 def _repeat(
     child: Node, low: int, high: int | None, mode: Mode, aggressive: bool
 ) -> Node:
-    captures = contains(child, (Group,))
+    captures = may_capture(child)
     if child == EMPTY:
         return EMPTY
     if (low, high) == (1, 1):

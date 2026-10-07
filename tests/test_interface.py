@@ -3,7 +3,7 @@ from hypothesis import given
 from hypothesis import strategies as st
 
 import remagic as rm
-from remagic import RemagicException
+from remagic import RemagicException, unsafe
 
 CHARS = st.text(min_size=1, max_size=6)
 
@@ -110,3 +110,15 @@ def test_readme_example() -> None:
 
 def test_version() -> None:
     assert isinstance(rm.__version__, str)
+
+
+def test_ref_rejects_numbers_that_python_reads_as_octal_escapes() -> None:
+    assert str(rm.ref(99)) == r"(?:\99)"
+    with pytest.raises(RemagicException, match="by name"):
+        rm.ref(100)
+
+
+def test_any_of_keeps_regex_requirement_of_source_identical_duplicates() -> None:
+    plain, needing = rm.exactly("a"), unsafe.raw("a", needs_regex=True)
+    assert rm.any_of([plain, needing]).needs_regex
+    assert rm.any_of([needing, plain]).needs_regex
