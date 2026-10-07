@@ -27,7 +27,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
-regex = ["regex>=2024.11.6"]
+regex = ["regex>=2026.9.29"]
 
 [project.urls]
 Homepage = "https://github.com/ificiana/remagic"
@@ -36,17 +36,17 @@ Repository = "https://github.com/ificiana/remagic"
 
 [dependency-groups]
 dev = [
-  "hypothesis>=6.120",
-  "mypy>=1.14",
-  "pre-commit>=4.0",
-  "pytest>=8.3",
-  "pytest-cov>=6.0",
-  "regex>=2024.11.6",
-  "ruff>=0.9",
+  "hypothesis>=6.168",
+  "mypy>=2.4",
+  "pre-commit>=4.6",
+  "pytest>=9.1",
+  "pytest-cov>=7.1",
+  "regex>=2026.9.29",
+  "ruff>=0.16",
 ]
 docs = [
-  "mkdocs-material>=9.5",
-  "mkdocstrings[python]>=0.27",
+  "mkdocs-material>=9.7",
+  "mkdocstrings[python]>=1.0",
 ]
 
 [tool.ruff]

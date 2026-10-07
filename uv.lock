@@ -1369,22 +1369,22 @@ docs = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "regex", marker = "extra == 'regex'", specifier = ">=2024.11.6" }]
+requires-dist = [{ name = "regex", marker = "extra == 'regex'", specifier = ">=2026.9.29" }]
 provides-extras = ["regex"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "hypothesis", specifier = ">=6.120" },
-    { name = "mypy", specifier = ">=1.14" },
-    { name = "pre-commit", specifier = ">=4.0" },
-    { name = "pytest", specifier = ">=8.3" },
-    { name = "pytest-cov", specifier = ">=6.0" },
-    { name = "regex", specifier = ">=2024.11.6" },
-    { name = "ruff", specifier = ">=0.9" },
+    { name = "hypothesis", specifier = ">=6.168" },
+    { name = "mypy", specifier = ">=2.4" },
+    { name = "pre-commit", specifier = ">=4.6" },
+    { name = "pytest", specifier = ">=9.1" },
+    { name = "pytest-cov", specifier = ">=7.1" },
+    { name = "regex", specifier = ">=2026.9.29" },
+    { name = "ruff", specifier = ">=0.16" },
 ]
 docs = [
-    { name = "mkdocs-material", specifier = ">=9.5" },
-    { name = "mkdocstrings", extras = ["python"], specifier = ">=0.27" },
+    { name = "mkdocs-material", specifier = ">=9.7" },
+    { name = "mkdocstrings", extras = ["python"], specifier = ">=1.0" },
 ]
 
 [[package]]
