@@ -217,3 +217,46 @@ def test_needs_regex_propagates() -> None:
 def test_repr_shows_only_the_source() -> None:
     assert repr(rm.DIGIT.times(2)) == "Pattern('\\\\d{2}')"
     assert repr(Pattern()) == "Pattern('')"
+
+
+@pytest.mark.parametrize(
+    ("inner", "variable"),
+    [
+        (rm.exactly("a"), False),
+        (rm.exactly("ab") | "cd", False),
+        (rm.exactly("a") | "bc", True),
+        (rm.exactly("a").times(2), False),
+        (rm.exactly("a").between(1, 2), True),
+        (rm.exactly("a").one_or_more(), True),
+        (rm.exactly("a").one_or_more().times(0), False),
+        (rm.exactly("a").one_or_more().times(0) + "b", False),
+        (rm.DIGIT + rm.WORD_BOUNDARY, False),
+        (rm.exactly("a").group(), False),
+        (rm.exactly("a").group("x") + rm.ref("x"), True),
+        (rm.unicode_property("L"), False),
+        (rm.exactly("a").atomic(), False),
+        (rm.exactly("a").followed_by("b"), False),
+        (rm.exactly("a").scoped("i"), False),
+    ],
+)
+def test_variable_width_lookbehind_needs_the_regex_engine(
+    inner: Pattern, variable: bool
+) -> None:
+    pattern = rm.exactly("x").preceded_by(inner)
+    assert pattern.needs_regex is (variable or inner.needs_regex)
+
+
+def test_variable_width_lookbehind_compiles_with_regex() -> None:
+    pattern = rm.exactly("x").preceded_by(rm.exactly("a").one_or_more())
+    assert pattern.compile().search("aax")
+
+
+def test_engine_compile_errors_are_remagic_exceptions() -> None:
+    for engine in ("re", "regex"):
+        with pytest.raises(RemagicException, match="cannot compile"):
+            unsafe.raw("(a").compile(engine=engine)
+
+
+def test_locale_flag_is_rejected_for_text_patterns() -> None:
+    with pytest.raises(RemagicException, match="locale"):
+        rm.exactly("a").scoped("L")

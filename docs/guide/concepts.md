@@ -2,8 +2,12 @@
 
 ## Functions and methods
 
-Every builder exists twice: as a method on `Pattern` and as a function that
-accepts a pattern or a string. These are equal:
+Quantifiers, groups and flags exist twice: as a method on `Pattern`
+and as a function that accepts a pattern or a string. The builders that start a
+pattern (`exactly`, `char_in`, `char_not_in`, `char_range`, `any_of`,
+`unicode_property` and `ref`) are functions only, and lookarounds are the
+functions `before`, `not_before`, `after` and `not_after` or the methods
+`followed_by`, `not_followed_by`, `preceded_by` and `not_preceded_by`. These are equal:
 
 ```pycon
 >>> import remagic as rm
