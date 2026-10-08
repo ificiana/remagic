@@ -32,6 +32,15 @@ html_title = f"remagic {release}"
 html_static_path = ["_static"]
 html_logo = "_static/logo.svg"
 html_favicon = "_static/favicon.svg"
+html_js_files = [
+    (
+        "//gc.zgo.at/count.js",
+        {
+            "async": "async",
+            "data-goatcounter": "https://ificiana-rm.goatcounter.com/count",
+        },
+    ),
+]
 html_theme_options = {
     "github_url": "https://github.com/ificiana/remagic",
 }
