@@ -468,7 +468,7 @@ def _factor(texts: list[str], reorder: bool) -> list[Node]:
         if len(group) == 1:
             out.append(Lit(group[0]))
             continue
-        prefix = commonprefix(group)
+        prefix = commonprefix(group)  # noqa: RUF071 - plain string prefix, not a path
         rest = tuple(Lit(t[len(prefix) :]) if t != prefix else EMPTY for t in group)
         out.append(Seq((Lit(prefix), Alt(rest))))
     return out
