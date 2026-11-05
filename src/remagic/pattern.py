@@ -13,7 +13,7 @@ from .exceptions import RemagicException
 
 Engine = Literal["auto", "re", "regex"]
 
-_FLAGS = frozenset("aiLmsux")
+_FLAGS = frozenset("aimsux")
 _SCOPED_OFF = frozenset("imsx")
 _ENCODINGS = frozenset("aLu")
 
@@ -231,6 +231,8 @@ class Pattern:
         """
         if not on and not off:
             raise RemagicException("scoped needs at least one flag")
+        if "L" in on + off:
+            raise RemagicException("the locale flag works only on bytes patterns")
         if not (set(on) | set(off)) <= _FLAGS:
             raise RemagicException(f"unknown flags in {on + off!r}")
         if set(on) & set(off):
@@ -333,6 +335,9 @@ class Pattern:
     ) -> re.Pattern[str]:
         """Compile with `re`, or with `regex` when the pattern needs it.
 
+        Returns a `re.Pattern`; with the `regex` engine it is a `regex` pattern
+        that offers the same methods, so the annotation names the common type.
+
         `optimize` rewrites the pattern to a cheaper one with the same
         matches (`True` or `"safe"`), also factors alternatives for
         `fullmatch` use (`"aggressive"`), or compiles the pattern as built
@@ -358,5 +363,10 @@ class Pattern:
         if optimize:
             level: Level = "safe" if optimize is True else optimize
             node = tree.optimize(node, level, flags, possessive=not use_regex)
-        compiled: re.Pattern[str] = module.compile(tree.render(node), flags)
+        try:
+            compiled: re.Pattern[str] = module.compile(tree.render(node), flags)
+        except module.error as error:
+            raise RemagicException(
+                f"the engine cannot compile this pattern: {error}"
+            ) from error
         return compiled

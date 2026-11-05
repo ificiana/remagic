@@ -4,8 +4,9 @@ Install with `uv add remagic` (or `pip install remagic`). Python 3.11+ is requir
 
 ## Build, compile, match
 
-Start from a building block, combine, then `compile()` to get an ordinary
-`re.Pattern`.
+Start from a building block, combine, then `compile()` to get a compiled
+pattern. It is an ordinary `re.Pattern`, or a `regex` pattern with the same
+methods when the pattern needs the `regex` engine.
 
 ```pycon
 >>> import remagic as rm

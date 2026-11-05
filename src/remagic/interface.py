@@ -95,7 +95,9 @@ def any_of(values: Iterable[Pattern | str]) -> Pattern:
     unique: dict[str, Pattern] = {}
     for value in values:
         item = create(value)
-        unique.setdefault(item.source, item)
+        kept = unique.setdefault(item.source, item)
+        if item.needs_regex and not kept.needs_regex:
+            unique[item.source] = item
     if not unique:
         raise RemagicException("any_of needs at least one alternative")
     result, *rest = unique.values()
@@ -162,10 +164,15 @@ def not_after(value: Pattern | str) -> Pattern:
     return create(value).negative_lookbehind()
 
 
+_OCTAL_AMBIGUOUS = 100
+
+
 def ref(reference: int | str) -> Pattern:
     """Match the text captured by a numbered or named group."""
     if isinstance(reference, bool):
         raise RemagicException("references are positive integers or group names")
+    if isinstance(reference, int) and reference >= _OCTAL_AMBIGUOUS:
+        raise RemagicException("refer to groups numbered 100 or more by name")
     if isinstance(reference, int) and reference > 0:
         return Pattern(tree.Backref(reference))
     if isinstance(reference, str) and reference.isidentifier() and reference.isascii():
